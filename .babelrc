@@ -5,18 +5,19 @@
             "plugins": [
                 "syntax-dynamic-import",
                 ["istanbul", {"exclude": ["test/**/*"]}]
-            ]       
+            ]
         },
         "node": {
             "presets": [
                 ["@babel/preset-env", {"modules": false}]
             ],
-            "plugins": [
-                "@babel/plugin-syntax-import-meta"
-            ]
+            "plugins": ["@babel/plugin-syntax-dynamic-import", "@babel/plugin-syntax-import-meta"]
         },
         "browser": {
-            "plugins": ["@babel/syntax-dynamic-import", "@babel/plugin-syntax-import-meta"]
+			"presets": [
+                ["@babel/preset-env", {"modules": false}]
+            ],
+            "plugins": ["@babel/plugin-syntax-dynamic-import", "@babel/plugin-syntax-import-meta"]
         }
 	}
 }

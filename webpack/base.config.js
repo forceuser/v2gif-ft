@@ -3,13 +3,14 @@ const path = require("path");
 
 module.exports = ({
 	entry: {
-		"index": path.resolve(__dirname, "../app/index.mjs"),
+		"index": path.resolve(__dirname, "../app/index.js"),
 	},
 	output: {
 		path: path.resolve(__dirname, "../dist"),
-		filename: "[name].js",		
+		filename: "[name].js",
+		publicPath: "/dist/",
 	},
-	devtool: "source-map",	
+	devtool: "source-map",
 	module: {
 		rules: [{
 			test: /\.(js|mjs)$/,
@@ -18,6 +19,7 @@ module.exports = ({
 				loader: "babel-loader",
 				options: {
 					babelrc: true,
+					envName: "browser",
 				},
 			}],
 		}],

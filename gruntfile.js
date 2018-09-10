@@ -9,63 +9,41 @@ module.exports = function (grunt) {
 			},
 			dist: {
 				files: {
-					"assets/css/index.css": "assets/less/index.less"
+					"app/static/assets/css/index.css": "app/static/assets/less/index.less"
 				}
 			}
 		},
 		autoprefixer: {
 			options: {
-				browsers: ["last 50 versions"],
+				browsers: ["last 3 versions"],
 				cascade: false
 			},
 			dist: {
 				files: {
-					"assets/css/index.css": "assets/css/index.css"
+					"app/static/assets/css/index.css": "app/static/assets/css/index.css"
 				}
 			}
 		},
 		cssmin: {
 			dist: {
 				files: {
-					"assets/css/index.min.css" : "assets/css/index.css"
+					"app/static/assets/css/index.min.css" : "app/static/assets/css/index.css"
 				}
 			}
 		},
-		sync: {
-			main: {
-				files: [{
-					cwd: "./",
-					src: [
-						"**",
-						"!node_modules/**"
-					],
-					dest: "../../../../target/classes/static",
-				},
-				{
-					cwd: "../templates",
-					src: [
-						"**"
-					],
-					dest: "../../../../target/classes/templates",
-				},
-				{
-					cwd: "../i18n",
-					src: [
-						"**"
-					],
-					dest: "../../../../target/classes/i18n",
-				}],
-				verbose: true,
-				updateAndDelete: true
-			}
-		}
+		watch: {
+			less: {
+				files: "app/static/assets/less/**/*.less",
+				tasks: ["css"],
+			},
+		},
 	});
 
-	grunt.loadNpmTasks("grunt-sync");
 	grunt.loadNpmTasks("grunt-shell");
 	grunt.loadNpmTasks("grunt-autoprefixer");
 	grunt.loadNpmTasks("grunt-contrib-cssmin");
 	grunt.loadNpmTasks("grunt-contrib-less");
+	grunt.loadNpmTasks("grunt-contrib-watch");
 
 	grunt.registerTask("css", "build css", function () {
 	   var tasks = [
@@ -77,4 +55,5 @@ module.exports = function (grunt) {
 	});
 
 	grunt.registerTask("default", ["css", "shell:webpackClear", "shell:webpack"]);
+	grunt.registerTask("less-watch", ["less", "watch:less"]);
 };

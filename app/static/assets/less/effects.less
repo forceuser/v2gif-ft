@@ -1,0 +1,133 @@
+@keyframes card-shadow-red-move {
+	0% {
+		top: 45%;
+		left: 25%;
+	}
+
+	50% {
+		top: 60%;
+		left: 80%;
+	}
+
+	100% {
+		top: 45%;
+		left: 25%;
+	}
+}
+@keyframes card-shadow-yellow-move {
+	0% {
+		right: 25%;
+		bottom: 35%;
+	}
+
+	50% {
+		right: 90%;
+		bottom: 60%;
+	}
+
+	100% {
+		right: 25%;
+		bottom: 35%;
+	}
+}
+@keyframes card-shadow {
+	@color: fade(#555, 20%);
+
+	0% {
+		box-shadow: 0 0 10px 0px @color;
+	}
+
+	50% {
+		box-shadow: 0 0 45px 10px @color;
+	}
+
+	100% {
+		box-shadow: 0 0 10px 0px @color;
+	}
+}
+
+& {
+	@color: fade(#FB5354, 70%);
+	@keyframes card-shadow-red {
+		0% {
+			box-shadow: 0 0 111px 38px @color;
+		}
+
+		30% {
+			box-shadow: 0 0 80px 30px @color;
+		}
+
+		67% {
+			box-shadow: 0 0 210px 110px @color;
+		}
+
+		100% {
+			box-shadow: 0 0 111px 38px @color;
+		}
+	}
+}
+
+& {
+	@color: fade(#FB5354, 70%);
+	@keyframes card-shadow-yellow {
+		0% {
+			box-shadow: 0 0 121px 60px @color;
+		}
+
+		30% {
+			box-shadow: 0 0 210px 110px @color;
+		}
+
+		100% {
+			box-shadow: 0 0 121px 60px @color;
+		}
+	}
+}
+.view-shadow.active {
+	position: relative;
+	> .shadow-red {
+		display: block;
+		width: 3px;
+		height: 3px;
+		position: absolute;
+		z-index: -1;
+		animation: card-shadow-red-move 20s ease infinite;
+		animation-delay: -20s;
+
+		&:before {
+			content: "";
+			position: absolute;
+			z-index: -1;
+			border-radius: 100%;
+			animation: card-shadow-red 14s ease infinite;
+			animation-delay: -45s;
+		}
+	}
+
+	> .shadow-yellow {
+		display: block;
+		width: 3px;
+		height: 3px;
+		position: absolute;
+		z-index: -1;
+		animation: card-shadow-yellow-move 15s ease infinite;
+
+		&:before {
+			content: "";
+			position: absolute;
+			z-index: -1;
+			border-radius: 100%;
+			animation: card-shadow-yellow 10s ease infinite;
+		}
+	}
+
+	> .shadow {
+		position: absolute;
+		top: 0px;
+		left: 0px;
+		right: 0px;
+		height: 100%;
+		z-index: -1;
+		animation: card-shadow 8s linear infinite;
+	}
+}

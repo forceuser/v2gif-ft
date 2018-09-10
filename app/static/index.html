@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 	<meta charset="utf-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,7 +8,57 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" type="text/css" media="screen" href="assets/css/index.css" />
 </head>
+
 <body>
-	<script src="index.js"></script>
+	<div class="body-content">
+		<div class="page-loader">
+			<mini-loader large="">
+				<div class="mini-loader">
+					<svg viewBox="25 25 50 50">
+						<circle class="path" cx="50" cy="50" r="20" fill="none" stroke-miterlimit="10"></circle>
+					</svg>
+				</div>
+			</mini-loader>
+		</div>
+		<div class="view-shadow active">
+			<div class="shadow"></div>
+			<button type="button" class="button primary update-app" onclick="window.location.reload()">Доступно обновление!</button>
+			<main class="view-container">
+				<div class="view-wrapper">
+					<form class="form" novalidate>
+						<div class="captcha"></div>
+						<div class="form-header">
+							<div class="header-actions">
+							</div>
+							<div class="form-caption">
+								Конвертер видео в gif
+							</div>
+						</div>
+						<div class="form-body-wrapper">
+							<div class="form-body typo" style="height: 100%;">
+								<div>
+									<h2 class="text-center">
+										Перетащите или добавьте файлы
+									</h2>
+									<ul class="file-list" style="width: 100%; margin-top: 20px;">
+									</ul>
+								</div>
+							</div>
+						</div>
+						<div class="form-footer">
+							<button type="button" class="button default id--add-files">
+								Добавить файл
+							</button>
+							<button type="submit" class="button primary" disabled>
+								Далее
+							</button>
+						</div>
+					</form>
+				</div>
+			</main>
+		</div>
+	</div>
+	<script src="/dist/index.js"></script>
 </body>
+
 </html>
