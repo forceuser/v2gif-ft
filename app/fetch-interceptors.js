@@ -3,7 +3,10 @@ const ENVIRONMENT_IS_NODE = typeof process === "object" && typeof require === "f
 const ENVIRONMENT_IS_WEB = typeof window === "object";
 const ENVIRONMENT_IS_WORKER = typeof importScripts === "function";
 
-const tryEx = (fn) => {try {return fn()}catch(error){return undefined}};
+const tryEx = (fn) => {
+	try {return fn();}
+	catch (error) {return undefined;}
+};
 
 function serializeRequest (request) {
 	const headers = {};
@@ -23,7 +26,6 @@ function serializeRequest (request) {
 
 	if (request.method !== "GET" && request.method !== "HEAD") {
 		return request.clone().text().then((body) => {
-			console.log("serialized body", body);
 			serialized.body = body;
 			return Promise.resolve(serialized);
 		});
@@ -37,22 +39,22 @@ function deserializeRequest (data) {
 	return Promise.resolve(new Request(url, data));
 }
 
-function attach (env, onSuccess) {
+function attach (env, onSuccess, onError) {
 	// Make sure fetch is avaibale in the given environment
-	function fin () {
-		console.log("==== registering new fetch");
+	function fin (fetch) {
+		console.log("==== registering new fetch", fetch);
 		env.fetch = (function wrapper (fetch) {
 			return function fetchWithInterceptor (...args) {
 				return interceptor(fetch, ...args);
 			};
-		})(env.fetch);
+		})(fetch);
 		onSuccess && onSuccess();
 	}
 
 	if (!env.fetch) {
 		try {
 			console.log("==== isomorphic-fetch loading");
-			import("isomorphic-fetch").then(fin);			
+			import("isomorphic-fetch").then(module => fin(module.default));
 		}
 		catch (error) {
 			onError && onError(error);
@@ -60,7 +62,7 @@ function attach (env, onSuccess) {
 		}
 	}
 	else {
-		fin();		
+		fin(env.fetch);
 	}
 }
 
@@ -70,7 +72,6 @@ function interceptor (fetch, ...args) {
 	const reversedInterceptors = interceptors.reduce((array, interceptor) => [interceptor].concat(array), []);
 	let url;
 	let request;
-	console.log("fetch args", args);
 	if (args[0] instanceof Request) {
 		request = serializeRequest(args[0]);
 		url = request.url;
@@ -123,7 +124,7 @@ export default {
 				interceptors.splice(index, 1);
 			}
 		};
-	},	
+	},
 	clear () {
 		interceptors = [];
 	},
