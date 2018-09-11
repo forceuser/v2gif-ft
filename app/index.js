@@ -19,7 +19,7 @@ updateDeviceType();
 
 function main () {
 	let files = [];
-	const $form = $("form");
+	const $form = $("form.page-upload");
 	const updateState = () => {
 		$form.find(`.file-list`).html(files.map((file, idx) => `
 			<li>${file.name} [<a href="#" class="id--remove-file" idx="${idx}">удалить</a>]</li>
@@ -29,7 +29,7 @@ function main () {
 	$form.on("click", ".id--remove-file", event => {
 		files.splice(+$(event.currentTarget).attr("idx"), 1);
 		updateState();
-	})
+	});
 	$form
 		.on(
 			"drag dragstart dragend dragover dragenter dragleave drop",
@@ -60,7 +60,12 @@ function main () {
 		input.click();
 	});
 
-
+	$(".page-result").on("submit", async event => {
+		files = [];
+		updateState();
+		$(".page-upload").addClass("active");
+		$(".page-result").removeClass("active");
+	});
 	$form.on("submit", async event => {
 		event.preventDefault();
 		const body = new FormData();
@@ -70,8 +75,17 @@ function main () {
 			body,
 		})
 			.then(response => response.json());
-
-		console.log("RESULT", result);
+		$(".page-result").addClass("active");
+		$(".page-upload").removeClass("active");
+		const list = $(".result-list");
+		list.html((result.results || []).map(i => `
+			<div style="text-align: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid rgba(140, 140, 140, 0.2);">
+				<img style="max-width: 90%;" src="${i.url}" />
+				<div style="margin-top: 20px;">
+					<a href="${i.url}" target="_blank" download="${i.name}">скачать</a>
+				</div>
+			</div>`
+		));
 	});
 }
 

@@ -10,7 +10,6 @@ module.exports = merge(baseConfig, {
 		// index: "", // specify to enable root proxying
 		host: `${process.env.CLIENT_HOST || "0.0.0.0"}`,
 		port: `${process.env.CLIENT_PORT || "80"}`,
-		publicPath: "/dist/",
 		proxy: {"**": `http://${process.env.SERVER_HOST || "0.0.0.0"}:${process.env.SERVER_PORT || "3000"}`},
 	},
 });

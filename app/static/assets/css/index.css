@@ -45,18 +45,25 @@ body > svg {
 }
 .form {
   overflow: hidden;
+  display: -ms-flexbox;
   display: flex;
+  -ms-flex: 1;
   flex: 1;
+  -ms-flex-direction: column;
   flex-direction: column;
   height: 100%;
   width: 100%;
+  -ms-transform: scale(1);
   transform: scale(1);
   box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3);
 }
 .form .update-indicator {
   background: #f4f4f4;
+  display: -ms-flexbox;
   display: flex;
+  -ms-flex-pack: center;
   justify-content: center;
+  -ms-flex-align: center;
   align-items: center;
   height: 0px;
   overflow: hidden;
@@ -71,7 +78,9 @@ body > svg {
   opacity: 1;
 }
 .form .form-image-wrapper {
+  display: -ms-flexbox;
   display: flex;
+  -ms-flex-pack: center;
   justify-content: center;
 }
 .form .form-field {
@@ -85,9 +94,12 @@ body > svg {
   box-shadow: 0 3px 3px rgba(0, 0, 0, 0.12);
   color: black;
   padding: 16rem 24rem;
+  display: -ms-flexbox;
   display: flex;
+  -ms-flex-direction: column;
   flex-direction: column;
   min-height: 42rem;
+  -ms-flex-pack: start;
   justify-content: flex-start;
   position: relative;
   z-index: 1;
@@ -106,6 +118,7 @@ body > svg {
   line-height: 24rem;
 }
 .form .form-notification-wrapper {
+  position: -webkit-sticky;
   position: sticky;
   top: 0px;
   text-align: center;
@@ -130,6 +143,7 @@ body > svg {
   padding: 8rem;
 }
 .form .form-body-wrapper {
+  -ms-flex: 1 1 auto;
   flex: 1 1 auto;
   height: 0;
   min-height: 140px;
@@ -147,6 +161,7 @@ body > svg {
 }
 .form .form-footer {
   background: var(--color--bg);
+  -ms-flex: 0 0 auto;
   flex: 0 0 auto;
 }
 .form .form-footer .button {
@@ -157,27 +172,39 @@ body > svg {
   margin-left: var(--input-padding-side);
 }
 .view-container {
+  display: -ms-flexbox;
   display: flex;
   height: 100%;
   background: white;
 }
 .view-wrapper {
+  display: -ms-flexbox;
   display: flex;
+  -ms-flex: 1;
   flex: 1;
+  -ms-flex-pack: center;
   justify-content: center;
+  -ms-flex-align: center;
   align-items: center;
 }
 .view-shadow {
   position: relative;
+  -ms-flex: 1;
   flex: 1;
+  display: -ms-flexbox;
   display: flex;
+  -ms-flex-direction: column;
   flex-direction: column;
+  -ms-flex-pack: center;
   justify-content: center;
+  -ms-flex-align: center;
   align-items: center;
   margin: auto;
   height: 100%;
   width: 100%;
+  -ms-flex-pack: stretch;
   justify-content: stretch;
+  -ms-flex-align: stretch;
   align-items: stretch;
 }
 body[device-type="desktop"] .view-shadow,
@@ -186,6 +213,7 @@ body[device-type="tablet"] .view-shadow {
   max-height: 700px;
 }
 .body-content {
+  display: -ms-flexbox;
   display: flex;
   height: 100%;
 }
@@ -198,10 +226,13 @@ body[device-type="tablet"] .view-shadow {
   bottom: 0px;
   background: white;
   z-index: 1001;
+  -ms-flex-pack: center;
   justify-content: center;
+  -ms-flex-align: center;
   align-items: center;
 }
 .page-loader.active {
+  display: -ms-flexbox;
   display: flex;
 }
 body:not([has-update]) .update-app {
@@ -211,8 +242,11 @@ body:not([has-update]) .update-app {
   width: 100%;
   position: relative;
   margin-top: 16rem;
+  display: -ms-flexbox;
   display: flex;
+  -ms-flex-pack: center;
   justify-content: center;
+  -ms-flex-align: center;
   align-items: center;
 }
 .photo-wrapper .photo-container img {
@@ -227,7 +261,9 @@ body:not([has-update]) .update-app {
   left: 0px;
   top: 0px;
   display: none;
+  -ms-flex-pack: center;
   justify-content: center;
+  -ms-flex-align: center;
   align-items: center;
   z-index: 1;
   pointer-events: none;
@@ -291,6 +327,7 @@ body:not([has-update]) .update-app {
   margin: 0px;
   z-index: 2;
   overflow: hidden;
+  -ms-transform: scale(1);
   transform: scale(1);
 }
 .photo-wrapper.full .photo-wrapper-fill {
@@ -301,6 +338,7 @@ body:not([has-update]) .update-app {
   bottom: 0px;
   width: 100%;
   height: 100%;
+  display: -ms-flexbox;
   display: flex;
 }
 .photo-wrapper.full .photo-placeholder {
@@ -310,6 +348,7 @@ body:not([has-update]) .update-app {
   margin: auto;
 }
 .photo-wrapper.empty .photo-placeholder {
+  display: -ms-flexbox;
   display: flex;
 }
 .photo-wrapper.empty .photo-placeholder .text-muted {
@@ -317,6 +356,9 @@ body:not([has-update]) .update-app {
 }
 .photo-wrapper.empty .photo-container img {
   height: 280px;
+}
+.page:not(.active) {
+  display: none;
 }
 :root {
   --color--primary: #FB5354;
@@ -417,8 +459,11 @@ body:not([has-update]) .update-app {
   position: relative;
   width: 2em;
   height: 2em;
+  display: -ms-inline-flexbox;
   display: inline-flex;
+  -ms-flex-align: center;
   align-items: center;
+  -ms-flex-pack: center;
   justify-content: center;
   transition: all 0.3s ease;
   border-radius: 100%;
@@ -475,6 +520,7 @@ body:not([has-update]) .update-app {
   opacity: 0;
   box-shadow: 0 0 0 0;
   transition: all 0.3s ease;
+  -ms-transform: scale(1);
   transform: scale(1);
   backface-visibility: hidden;
   z-index: -1;
@@ -533,6 +579,7 @@ body:not([focus-type="click"]) .button-round:focus:after {
   opacity: 0;
   box-shadow: 0 0 0 0;
   transition: all 0.3s ease;
+  -ms-transform: scale(1);
   transform: scale(1);
   backface-visibility: hidden;
   z-index: -1;
@@ -582,6 +629,11 @@ body:not([focus-type="click"]) .button-round:focus:after {
     opacity: 0.05;
   }
 }
+:-ms-input-placeholder {
+  color: #aaa;
+  font-weight: 400;
+  opacity: 0;
+}
 ::placeholder {
   color: #aaa;
   font-weight: 400;
@@ -597,6 +649,7 @@ label[input] {
   transition: all 0.3s ease;
 }
 label[input] container {
+  display: -ms-flexbox;
   display: flex;
   position: relative;
   padding: 1.55em var(--input-padding-side) 0.4em;
@@ -607,6 +660,7 @@ label[input] container .btn-close {
   position: relative;
   font-size: 0.8em;
   margin-left: 0.5em;
+  -ms-flex: 0 0 auto;
   flex: 0 0 auto;
 }
 label[input] select {
@@ -615,6 +669,8 @@ label[input] select {
 label[input] input,
 label[input] select,
 label[input] textarea {
+  -webkit-appearance: none;
+  -moz-appearance: none;
   appearance: none;
   opacity: 0;
   width: 100%;
@@ -633,10 +689,14 @@ label[input] textarea {
 }
 label[input] .icon {
   margin-right: var(--input-padding-side);
+  -ms-flex-order: -1;
   order: -1;
   opacity: 0.5;
+  display: -ms-flexbox;
   display: flex;
+  -ms-flex-pack: center;
   justify-content: center;
+  -ms-flex-align: center;
   align-items: center;
 }
 label[input] .icon ~ label {
@@ -648,11 +708,18 @@ label[input] label {
   left: var(--input-padding-side);
   opacity: 0.6;
   transition: all 0.15s ease-in-out;
+  -ms-transform-origin: 0 50%;
   transform-origin: 0 50%;
   pointer-events: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
 }
 label[input].nolabel input {
+  opacity: 1;
+}
+label[input].nolabel input:-ms-input-placeholder {
   opacity: 1;
 }
 label[input].nolabel input::placeholder {
@@ -682,7 +749,9 @@ label[input] box:before {
   height: 1px;
   background-color: var(--color--primary);
   width: 100%;
+  -ms-transform-origin: center;
   transform-origin: center;
+  -ms-transform: scaleX(0);
   transform: scaleX(0);
   transition: all 0.35s ease;
 }
@@ -712,6 +781,26 @@ label[input] input:not(:empty),
 label[input] select:not(:empty),
 label[input] textarea:not(:empty) {
   opacity: 0.85;
+}
+label[input] input.focus:-ms-input-placeholder,
+label[input] select.focus:-ms-input-placeholder,
+label[input] textarea.focus:-ms-input-placeholder,
+label[input] input.has-value:-ms-input-placeholder,
+label[input] select.has-value:-ms-input-placeholder,
+label[input] textarea.has-value:-ms-input-placeholder,
+label[input] input.error:-ms-input-placeholder,
+label[input] select.error:-ms-input-placeholder,
+label[input] textarea.error:-ms-input-placeholder,
+label[input] input.ng-not-empty:-ms-input-placeholder,
+label[input] select.ng-not-empty:-ms-input-placeholder,
+label[input] textarea.ng-not-empty:-ms-input-placeholder,
+label[input] input:focus:-ms-input-placeholder,
+label[input] select:focus:-ms-input-placeholder,
+label[input] textarea:focus:-ms-input-placeholder,
+label[input] input:not(:empty):-ms-input-placeholder,
+label[input] select:not(:empty):-ms-input-placeholder,
+label[input] textarea:not(:empty):-ms-input-placeholder {
+  opacity: 1;
 }
 label[input] input.focus::placeholder,
 label[input] select.focus::placeholder,
@@ -751,6 +840,7 @@ label[input] textarea:focus ~ label,
 label[input] input:not(:empty) ~ label,
 label[input] select:not(:empty) ~ label,
 label[input] textarea:not(:empty) ~ label {
+  -ms-transform: scale(0.83);
   transform: scale(0.83);
   top: 0.2em;
 }
@@ -821,6 +911,11 @@ label[input] select:-ms-autofill,
 label[input] textarea:-ms-autofill {
   opacity: 0.85;
 }
+label[input] input:-ms-autofill:-ms-input-placeholder,
+label[input] select:-ms-autofill:-ms-input-placeholder,
+label[input] textarea:-ms-autofill:-ms-input-placeholder {
+  opacity: 1;
+}
 label[input] input:-ms-autofill::placeholder,
 label[input] select:-ms-autofill::placeholder,
 label[input] textarea:-ms-autofill::placeholder {
@@ -829,6 +924,7 @@ label[input] textarea:-ms-autofill::placeholder {
 label[input] input:-ms-autofill ~ label,
 label[input] select:-ms-autofill ~ label,
 label[input] textarea:-ms-autofill ~ label {
+  -ms-transform: scale(0.83);
   transform: scale(0.83);
   top: 0.2em;
 }
@@ -842,6 +938,11 @@ label[input] select:autofill,
 label[input] textarea:autofill {
   opacity: 0.85;
 }
+label[input] input:autofill:-ms-input-placeholder,
+label[input] select:autofill:-ms-input-placeholder,
+label[input] textarea:autofill:-ms-input-placeholder {
+  opacity: 1;
+}
 label[input] input:autofill::placeholder,
 label[input] select:autofill::placeholder,
 label[input] textarea:autofill::placeholder {
@@ -850,6 +951,7 @@ label[input] textarea:autofill::placeholder {
 label[input] input:autofill ~ label,
 label[input] select:autofill ~ label,
 label[input] textarea:autofill ~ label {
+  -ms-transform: scale(0.83);
   transform: scale(0.83);
   top: 0.2em;
 }
@@ -887,6 +989,7 @@ label[input] textarea.focus ~ box:before,
 label[input] input:focus ~ box:before,
 label[input] select:focus ~ box:before,
 label[input] textarea:focus ~ box:before {
+  -ms-transform: scaleX(1);
   transform: scaleX(1);
   height: 2px;
 }
@@ -1028,6 +1131,7 @@ label[input].loading box:before {
   will-change: left, right;
   left: -35%;
   right: 100%;
+  -ms-transform: scaleX(1);
   transform: scaleX(1);
   opacity: 1;
   animation: indeterminate 2.1s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite;
@@ -1044,6 +1148,7 @@ label[input].loading box:after {
   will-change: left, right;
   left: -35%;
   right: 100%;
+  -ms-transform: scaleX(1);
   transform: scaleX(1);
   opacity: 1;
   animation: indeterminate-short 2.1s cubic-bezier(0.165, 0.84, 0.44, 1) infinite;
@@ -1105,8 +1210,12 @@ label[input].loading box:after {
 }
 .input-block,
 label[button-block] {
+  display: -ms-flexbox;
   display: flex;
   margin-bottom: 0.2em;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
   padding: 20px;
   background: #3a3a3a;
@@ -1130,7 +1239,11 @@ label[button] {
 }
 label[button-block],
 label[button] {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
+  display: -ms-inline-flexbox;
   display: inline-flex;
   outline: none;
   white-space: nowrap;
@@ -1154,6 +1267,7 @@ label[button-block] input[type="radio"] + box,
 label[button] input[type="radio"] + box {
   position: relative;
   display: inline-block;
+  -ms-flex: 0 0 auto;
   flex: 0 0 auto;
   vertical-align: middle;
   font-size: var(--checkbox-size);
@@ -1190,6 +1304,7 @@ label[button] input[type="radio"] + box:after {
   width: 100%;
   height: 100%;
   border: var(--checkbox-line-width) solid;
+  -ms-transform: scale(0.2);
   transform: scale(0.2);
   opacity: 0;
   color: #aaa;
@@ -1207,6 +1322,7 @@ label[button] input[type="checkbox"]:checked + box:after,
 label[button-block] input[type="radio"]:checked + box:after,
 label[button] input[type="radio"]:checked + box:after {
   color: currentColor;
+  -ms-transform: scale(0.5);
   transform: scale(0.5);
   opacity: 1;
 }
@@ -1266,11 +1382,13 @@ label[button] input[type="checkbox"] + box:after {
   left: 22%;
   top: -7%;
   width: 55%;
+  -ms-transform: rotate(39deg) scale(0.5);
   transform: rotate(39deg) scale(0.5);
   transition: all 0.2s ease;
 }
 label[button-block] input[type="checkbox"]:checked + box:after,
 label[button] input[type="checkbox"]:checked + box:after {
+  -ms-transform: rotate(41deg) scale(0.7);
   transform: rotate(41deg) scale(0.7);
 }
 label[button-block] input:disabled + box,
@@ -1304,6 +1422,7 @@ label[button] input.slide.slide.slide + box:after {
   border-radius: 100%;
   left: 0.03em;
   opacity: 0.7;
+  -ms-transform: scale(0.9);
   transform: scale(0.9);
   transition: all 0.3s ease;
 }
@@ -1369,6 +1488,7 @@ label[button].inversed input.slide.slide.slide:disabled:checked + box:after {
   pointer-events: none;
 }
 .notification-bar > .content {
+  display: -ms-flexbox;
   display: flex;
   position: absolute;
   pointer-events: none;
@@ -1377,12 +1497,15 @@ label[button].inversed input.slide.slide.slide:disabled:checked + box:after {
   width: 100%;
   top: 0;
   padding-right: 10px;
+  -ms-flex-direction: column;
   flex-direction: column;
 }
 .notification-bar > .content .common {
+  -ms-flex: 0 0 auto;
   flex: 0 0 auto;
 }
 .notification-bar > .content .notification-list {
+  -ms-flex: 0 1 auto;
   flex: 0 1 auto;
   text-align: left;
   list-style: none;
@@ -1555,6 +1678,7 @@ mini-loader {
 .mini-loader svg {
   animation: rotate 2s linear infinite;
   height: 100%;
+  -ms-transform-origin: center center;
   transform-origin: center center;
   width: 100%;
   position: absolute;
@@ -1611,6 +1735,10 @@ mini-loader[large] svg .path {
   90% {
     stroke: var(--color--current);
   }
+}
+::-moz-selection {
+  background: var(--color--primary);
+  color: white;
 }
 ::selection {
   background: var(--color--primary);
@@ -1747,6 +1875,7 @@ mini-loader[large] svg .path {
   color: #6B8099;
 }
 .typo .main-block {
+  -ms-flex: 1 1 100%;
   flex: 1 1 100%;
 }
 .typo .icon-list-wrapper {
@@ -1754,8 +1883,11 @@ mini-loader[large] svg .path {
   margin-bottom: 24rem;
 }
 .typo .icon-list-item {
+  display: -ms-flexbox;
   display: flex;
+  -ms-flex-pack: start;
   justify-content: flex-start;
+  -ms-flex-align: center;
   align-items: center;
   margin-bottom: 16rem;
 }

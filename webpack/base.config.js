@@ -6,9 +6,9 @@ module.exports = ({
 		"index": path.resolve(__dirname, "../app/index.js"),
 	},
 	output: {
-		path: path.resolve(__dirname, "../dist"),
+		path: path.resolve(__dirname, "../app/static/js"),
 		filename: "[name].js",
-		publicPath: "/dist/",
+		publicPath: "/js/",
 	},
 	devtool: "source-map",
 	module: {
