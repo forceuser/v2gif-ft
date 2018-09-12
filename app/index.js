@@ -16,14 +16,21 @@ function updateDeviceType () {
 
 updateDeviceType();
 
-
 function main () {
 	let files = [];
 	const $form = $("form.page-upload");
 	const updateState = () => {
-		$form.find(`.file-list`).html(files.map((file, idx) => `
-			<li>${file.name} [<a href="#" class="id--remove-file" idx="${idx}">удалить</a>]</li>
-		`).join(""));
+		$form.find(`.file-list`).html(
+			files
+				.map(
+					(file, idx) => `
+			<li>${
+	file.name
+} [<a href="#" class="id--remove-file" idx="${idx}">удалить</a>]</li>
+		`
+				)
+				.join("")
+		);
 		$form.find(`button[type="submit"]`).prop("disabled", !files.length);
 	};
 	$form.on("click", ".id--remove-file", event => {
@@ -50,7 +57,9 @@ function main () {
 		});
 	$form.find(".id--add-files").on("click", () => {
 		$(`#file-form`).remove();
-		const form = $(`<form id="file-form" style="z-index: -1; position: absolute; width: 0; height: 0; overflow: hidden; opacity: 0;"><input type="file" multiple/></form>`).appendTo("body");
+		const form = $(
+			`<form id="file-form" style="z-index: -1; position: absolute; width: 0; height: 0; overflow: hidden; opacity: 0;"><input type="file" multiple/></form>`
+		).appendTo("body");
 		const input = form.find("input");
 		input.on("change", event => {
 			files = [...files, ...input[0].files];
@@ -70,22 +79,26 @@ function main () {
 		event.preventDefault();
 		const body = new FormData();
 		files.forEach(file => body.append("file", file));
+		$(".page-loader").addClass("active");
 		const result = await fetch(`/post`, {
 			method: "POST",
 			body,
-		})
-			.then(response => response.json());
+		}).then(response => response.json());
 		$(".page-result").addClass("active");
 		$(".page-upload").removeClass("active");
+		$(".page-loader").removeClass("active");
 		const list = $(".result-list");
-		list.html((result.results || []).map(i => `
-			<div style="text-align: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid rgba(140, 140, 140, 0.2);">
-				<img style="max-width: 90%;" src="${i.url}" />
+		list.html(
+			(result.results || []).map(
+				i => `
+			<div class="result-item">
+				<img style="max-width: 90%;" src="/img/${i.name}" />
 				<div style="margin-top: 20px;">
-					<a href="${i.url}" target="_blank" download="${i.name}">скачать</a>
+					<a href="/img/${i.name}" target="_blank" download="${i.download}">скачать</a>
 				</div>
 			</div>`
-		));
+			)
+		);
 	});
 }
 

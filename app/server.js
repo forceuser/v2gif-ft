@@ -1,6 +1,7 @@
 /* global process */
 import {default as fetchInterceptors, initFetch} from "./fetch-interceptors";
 // import "isomorphic-fetch";
+import path from "path";
 import FormData from "form-data";
 import multer from "multer";
 import http from "http";
@@ -9,7 +10,9 @@ import express from "express";
 import serveIndex from "serve-index";
 import serveStatic from "serve-static";
 import morgan from "morgan";
+import proxy from "express-http-proxy";
 import {JSDOM} from "jsdom";
+import https from "https";
 
 fetchInterceptors.register({
 	async response (response, request) {
@@ -136,7 +139,10 @@ const stages = [
 	}},
 ];
 
+
 initFetch().then(async () => {
+	const fileNameMap = {};
+
 	const app = express();
 	app.set("trust proxy", true);
 
@@ -145,6 +151,7 @@ initFetch().then(async () => {
 	const upload = multer({dest: "./uploads/"}).array("file");
 	router.post("/post", upload, async (req, res, next) => {
 		const results = (req.files || []).map(async fileInfo => {
+			console.log("fileInfo", fileInfo);
 			const file = await fs.readFile(fileInfo.path);
 			const downloadUrl = await stages.reduce(async (acc, stage, idx) => {
 				let url = await acc;
@@ -164,7 +171,12 @@ initFetch().then(async () => {
 					nextStage: (stages[idx + 1] || {}).id || "save",
 				});
 			}, Promise.resolve());
-			return {name: fileInfo.filename, url: downloadUrl};
+			const destName = path.parse(downloadUrl);
+			const downName = path.parse(fileInfo.originalname);
+			const name = `${destName.name || ""}${destName.ext || ""}`;
+			const info = {download: `${downName.name || ""}${destName.ext || ""}`, name, url: downloadUrl};
+			fileNameMap[name] = info;
+			return info;
 		});
 
 		const errors = [];
@@ -177,6 +189,21 @@ initFetch().then(async () => {
 	});
 
 	router.use("/", serveStatic("./app/static"), serveIndex("./app/static"));
+	router.get("/img/:id", (req, res, next) => {
+		const urlInfo = fileNameMap[req.params.id];
+		try {
+			https.get(urlInfo.url, (response) => {
+				res.status(200);
+				res.header({"content-type": "image/gif"});
+				res.header({"content-disposition": `attachment; filename="${urlInfo.download}"`});
+				response.pipe(res);
+			});
+		}
+		catch (error) {
+			//
+		}
+	});
+
 	app.use("/", router);
 	app.use(morgan("dev"));
 

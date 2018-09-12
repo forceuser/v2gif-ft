@@ -1,15 +1,11 @@
 module.exports = function (grunt) {
 	grunt.initConfig({
-		shell: {
-			webpack: "webpack --config ./webpack/build.config.js && webpack --config ./webpack/build-min.config.js",
-			webpackClear: "rm -rf ./dist",
-		},
 		less: {
 			options: {
 			},
 			dist: {
 				files: {
-					"app/static/assets/css/index.css": "app/static/assets/less/index.less"
+					"app/static/css/index.css": "app/assets/less/index.less"
 				}
 			}
 		},
@@ -20,20 +16,20 @@ module.exports = function (grunt) {
 			},
 			dist: {
 				files: {
-					"app/static/assets/css/index.css": "app/static/assets/css/index.css"
+					"app/static/css/index.css": "app/static/css/index.css"
 				}
 			}
 		},
 		cssmin: {
 			dist: {
 				files: {
-					"app/static/assets/css/index.min.css" : "app/static/assets/css/index.css"
+					"app/static/css/index.min.css" : "app/static/css/index.css"
 				}
 			}
 		},
 		watch: {
 			less: {
-				files: "app/static/assets/less/**/*.less",
+				files: "app/assets/less/**/*.less",
 				tasks: ["css"],
 			},
 		},
@@ -54,6 +50,6 @@ module.exports = function (grunt) {
 	   grunt.task.run(tasks);
 	});
 
-	grunt.registerTask("default", ["css", "shell:webpackClear", "shell:webpack"]);
-	grunt.registerTask("less-watch", ["less", "watch:less"]);
+	grunt.registerTask("default", ["css"]);
+	grunt.registerTask("less-watch", ["css", "watch:less"]);
 };

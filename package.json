@@ -3,7 +3,7 @@
 	"version": "1.0.0",
 	"main": "index.js",
 	"scripts": {
-		"server": "BABEL_ENV=node node ./run.js",
+		"start": "BABEL_ENV=node node ./run.js",
 		"dev": "CLIENT_HOST=127.0.0.1 SERVER_HOST=127.0.0.1 SERVER_PORT=8062 CLIENT_PORT=8061 concurrently npm:dev-server npm:dev-client npm:less",
 		"dev-debug": "CLIENT_HOST=127.0.0.1 SERVER_HOST=127.0.0.1 SERVER_PORT=8062 CLIENT_PORT=8061 concurrently npm:dev-server-debug npm:dev-client npm:less",
 		"dev-client": "webpack-dev-server --config ./webpack/development.config.js",
@@ -11,7 +11,7 @@
 		"dev-server-debug": "BABEL_ENV=node node --inspect-brk=15515 ./run.js",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"serve": "http-server -a localhost -p 8061",
-		"build": "NODE_ENV=development BABEL_ENV=browser webpack --config ./webpack/development.config.js",
+		"build": "NODE_ENV=production BABEL_ENV=browser webpack --config ./webpack/production.config.js && grunt",
 		"fix": "eslint --fix .",
 		"less": "grunt less-watch"
 	},
@@ -21,6 +21,7 @@
 		"@babel/polyfill": "^7.0.0",
 		"bodymovin": "^4.13.0",
 		"express": "^4.16.3",
+		"express-http-proxy": "^1.2.0",
 		"form-data": "^2.3.2",
 		"grunt-contrib-watch": "^1.1.0",
 		"gsap": "^1.20.2",
