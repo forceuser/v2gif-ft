@@ -7,6 +7,11 @@
 	<title>Конвертер видео в gif</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<base href="/"/>
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, minimal-ui"/>
+	<meta name="HandheldFriendly" content="true"/>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<link rel="icon" type="image/x-icon" href="/favicon.ico"/>
+	<link rel="manifest" href="/manifest.json"/>
 	<link rel="stylesheet" type="text/css" media="screen" href="css/index.css" />
 </head>
 
@@ -85,6 +90,13 @@
 		</div>
 	</div>
 	<script src="/js/index.js"></script>
+	<script>
+		if ("serviceWorker" in navigator) {
+			navigator.serviceWorker.register("./sw.js", {scope: "/"}).then(function (registration) {
+				const sw = registration.active;
+			});
+		}
+	</script>
 </body>
 
 </html>

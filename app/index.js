@@ -58,7 +58,7 @@ function main () {
 	$form.find(".id--add-files").on("click", () => {
 		$(`#file-form`).remove();
 		const form = $(
-			`<form id="file-form" style="z-index: -1; position: absolute; width: 0; height: 0; overflow: hidden; opacity: 0;"><input type="file" multiple/></form>`
+			`<form id="file-form" style="z-index: -1; position: absolute; width: 0; height: 0; overflow: hidden; opacity: 0;"><input type="file" accept="video/mp4,video/x-m4v,video/*" multiple/></form>`
 		).appendTo("body");
 		const input = form.find("input");
 		input.on("change", event => {

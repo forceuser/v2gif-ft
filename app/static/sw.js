@@ -25,16 +25,6 @@ const cacheName = "static";
 
 self.addEventListener("install", event => {
 	console.log("sw install", event);
-	// event.waitUntil(
-	// 	caches.open(cacheName).then((cache) => {
-	// 		return cache.addAll([
-	// 			"/offline.json",
-	// 		]);
-	// 	})
-	// 		.catch(error => {
-	// 			console.log("error init cache");
-	// 		})
-	// );
 });
 
 self.addEventListener("activate", event => {
@@ -54,14 +44,11 @@ self.addEventListener("fetch", event => {
 	console.log("sw fetch", event.request.url);
 	event.respondWith((async () => {
 		const request = event.request;
-		// if (event.clientId) {
-		// 	const client = await clients.get(event.clientId);
-		// }
 		const url = request.url;
 		const relUrl = (url.replace(new RegExp("^" + escapeRegExp(baseUrl), "igm"), "") || "").split("#")[0].split("?")[0];
 		const isIndexHtml = relUrl === "" || /^app(\/.*)?$/g.test(relUrl);
 		const isAbsolute = isAbsoluteURL(relUrl) && !relUrl.includes("recaptcha");
-		const isCacheable = isIndexHtml || isAbsolute || ["resources/", "assets/"].some(match => relUrl.startsWith(match));
+		const isCacheable = isIndexHtml || isAbsolute || ["css/", "icons/", "js/"].some(match => relUrl.startsWith(match));
 		console.log("relUrl", url, relUrl, isCacheable, isIndexHtml);
 		if (isCacheable) {
 			const cache = await caches.open(cacheName);
