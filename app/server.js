@@ -209,7 +209,7 @@ initFetch().then(async () => {
 
 	const server = http.createServer(app);
 
-	server.listen(process.env.SERVER_PORT || 3000, process.env.SERVER_HOST || "0.0.0.0", (req, res) => {
+	server.listen(process.env.SERVER_PORT || process.env.PORT || 3000, process.env.SERVER_HOST || process.env.IP || "0.0.0.0", (req, res) => {
 		const addr = server.address();
 
 		console.log(`Web server listening at http://${addr.address}:${addr.port}`);
