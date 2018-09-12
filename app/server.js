@@ -13,6 +13,16 @@ import morgan from "morgan";
 import proxy from "express-http-proxy";
 import {JSDOM} from "jsdom";
 import https from "https";
+import yargs from "yargs";
+
+const argv = yargs.alias("port", "p")
+	.describe("port", "define server port")
+	.alias("host", "h")
+	.alias("host", "ip")
+	.alias("host", "l")
+	.describe("host", "define host to listen to")
+	.help("help")
+	.argv;
 
 fetchInterceptors.register({
 	async response (response, request) {
@@ -209,7 +219,7 @@ initFetch().then(async () => {
 
 	const server = http.createServer(app);
 
-	server.listen(process.env.SERVER_PORT || process.env.PORT || 3000, process.env.SERVER_HOST || process.env.IP || "0.0.0.0", (req, res) => {
+	server.listen(argv.port || process.env.PORT || process.env.SERVER_PORT || 8080, argv.host || process.env.SERVER_HOST || process.env.IP || "0.0.0.0", (req, res) => {
 		const addr = server.address();
 
 		console.log(`Web server listening at http://${addr.address}:${addr.port}`);
