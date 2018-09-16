@@ -14,6 +14,7 @@ import proxy from "express-http-proxy";
 import {JSDOM} from "jsdom";
 import https from "https";
 import yargs from "yargs";
+import globby from "globby";
 
 const argv = yargs.alias("port", "p")
 	.describe("port", "define server port")
@@ -43,6 +44,17 @@ fetchInterceptors.register({
 	},
 });
 
+async function cleanup () {
+	try {
+		const paths = await globby(["./uploads/**/*"]);
+		await Promise.all(paths.map(p => fs.remove(p)));
+		console.log("cleanup finished");
+	}
+	catch (error) {
+		console.log("error while cleaning uploads directory", error);
+	}
+}
+
 async function getForm ({url, file, fileInfo}) {
 	const body = new FormData();
 	if (file) {
@@ -69,7 +81,7 @@ async function getForm ({url, file, fileInfo}) {
 		body,
 	})
 		.then(response => {
-			console.log(`UPLOADED TO ${response.url}`);
+			console.log(`Form received: ${response.url}`);
 			return response.text();
 		});
 	const dom = new JSDOM(html);
@@ -104,7 +116,7 @@ async function commitForm ({stage, id, token, data, nextStage = "save"}) {
 		body,
 	})
 		.then(response => {
-			console.log(`UPLOADED TO ${response.url}`);
+			console.log(`${stage} commited: ${response.url}`);
 			return response.text();
 		});
 	const dom = new JSDOM(html);
@@ -152,6 +164,7 @@ const stages = [
 
 initFetch().then(async () => {
 	const fileNameMap = {};
+	cleanup();
 
 	const app = express();
 	app.set("trust proxy", true);
@@ -186,6 +199,8 @@ initFetch().then(async () => {
 			const name = `${destName.name || ""}${destName.ext || ""}`;
 			const info = {download: `${downName.name || ""}${destName.ext || ""}`, name, url: downloadUrl};
 			fileNameMap[name] = info;
+			console.log("fileInfo", fileInfo);
+			fs.remove(fileInfo.path);
 			return info;
 		});
 

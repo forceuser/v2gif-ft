@@ -42,7 +42,6 @@ function deserializeRequest (data) {
 function attach (env, onSuccess, onError) {
 	// Make sure fetch is avaibale in the given environment
 	function fin (fetch) {
-		console.log("==== registering new fetch", fetch);
 		env.fetch = (function wrapper (fetch) {
 			return function fetchWithInterceptor (...args) {
 				return interceptor(fetch, ...args);
@@ -53,7 +52,6 @@ function attach (env, onSuccess, onError) {
 
 	if (!env.fetch) {
 		try {
-			console.log("==== isomorphic-fetch loading");
 			import("isomorphic-fetch").then(module => fin(module.default));
 		}
 		catch (error) {
