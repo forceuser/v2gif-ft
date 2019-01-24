@@ -1,22 +1,26 @@
 /* global __dirname */
 const path = require("path");
 const merge = require("webpack-merge");
-const devConfig = require("./development.config.js");
+const baseConfig = require("./base.config.js");
+const webpack = require("webpack");
+const isWSL = require("is-wsl");
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
-module.exports = merge(devConfig, {
-	entry: [
-		path.resolve(__dirname, "../test/test-runner.js")
-	],
-	output: {
+module.exports = (env = {}) => {
+	const result = merge(baseConfig(env), {
+		mode: "development",
+	});
+	result.target = "node";
+	result.entry = [
+		"@babel/polyfill",
+		path.resolve(__dirname, "../test/index.js")
+	];
+	result.output = {
 		path: path.resolve(__dirname, "../test/build"),
-		filename: "test-runner-node.js",
-		devtoolModuleFilenameTemplate: '[absolute-resource-path]',
-	},	
-	target: "node",
-	resolve: {
-		alias: {
-			"src": path.resolve(__dirname, "../src")
-		}
-	},
-	devtool: "source-map",
-});
+		filename: "index.js"
+	};
+
+	// result.plugins.push(new webpack.optimize.MinChunkSizePlugin({minChunkSize: 100000}));
+
+	return result;
+};

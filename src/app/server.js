@@ -15,6 +15,14 @@ import {JSDOM} from "jsdom";
 import https from "https";
 import yargs from "yargs";
 import globby from "globby";
+import {videoToGif} from "./video-to-gif";
+import {URL} from "universal-url";
+
+// console.log("process.mainModule", process.mainModule);
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const cwd = process.cwd();
+const distDir = path.resolve(__dirname, "../../dist/");
+const uploadsDir = path.resolve(__dirname, "../../uploads/");
 
 const argv = yargs.alias("port", "p")
 	.describe("port", "define server port")
@@ -46,7 +54,7 @@ fetchInterceptors.register({
 
 async function cleanup () {
 	try {
-		const paths = await globby(["./uploads/**/*"]);
+		const paths = (await globby(["./**/*"], {cwd: uploadsDir})).map(p => path.resolve(uploadsDir, p));
 		await Promise.all(paths.map(p => fs.remove(p)));
 		console.log("cleanup finished");
 	}
@@ -125,104 +133,150 @@ async function commitForm ({stage, id, token, data, nextStage = "save"}) {
 	return linkMap[nextStage];
 }
 
-const stages = [
-	{id: "crop-video", data: {
-		x1: 726,
-		y1: 67,
-		x2: 1194,
-		y2: 1011,
-		w: 468,
-		h: 944,
-		encoding: "original",
-	}},
-	{id: "resize-video", data: {
-		old_width: 468,
-		old_height: 944,
-		width: 230,
-		height: "",
-		percentage: 49.15,
-		encoding: "original",
-	}},
-	{id: "video-to-gif", data: formData => {
-		const [durationStr, hours, minutes, seconds] = formData.filestats.match(/(\d\d):(\d\d):(\d\d)/im);
-		return {
-			start: 0,
-			end: ((+hours * 60 * 60) + (+minutes * 60) + (+seconds + 1)),
-			size: "original",
-			fps: 7,
-			method: "ffmpeg",
-		};
-	}},
-	{id: "optimize", data: {
-		method: "gifsicle",
-		colors: 200,
-		lossy: 35,
-		fuzz: 3,
-	}},
-];
-
 
 initFetch().then(async () => {
 	const fileNameMap = {};
-	cleanup();
+	await cleanup();
 
 	const app = express();
 	app.set("trust proxy", true);
 
 	const router = express.Router();
 
-	const upload = multer({dest: "./uploads/"}).array("file");
+	const upload = multer({dest: uploadsDir}).array("file");
+	async function convert (fileInfo, options) {
+		return await videoToGif(fileInfo.path, options);
+	}
+
+	async function ezgif (fileInfo) {
+		const file = await fs.readFile(fileInfo.path);
+
+		const stages = [
+			{id: "crop-video", data: {
+				x1: 726,
+				y1: 67,
+				x2: 1194,
+				y2: 1011,
+				w: 468,
+				h: 944,
+				encoding: "original",
+			}},
+			{id: "resize-video", data: {
+				old_width: 468,
+				old_height: 944,
+				width: 230,
+				height: "",
+				percentage: 49.15,
+				encoding: "original",
+			}},
+			{id: "video-to-gif", data: formData => {
+				const [durationStr, hours, minutes, seconds] = formData.filestats.match(/(\d\d):(\d\d):(\d\d)/im);
+				return {
+					start: 0,
+					end: ((+hours * 60 * 60) + (+minutes * 60) + (+seconds + 1)),
+					size: "original",
+					fps: 7,
+					method: "ffmpeg",
+				};
+			}},
+			{id: "optimize", data: {
+				method: "gifsicle",
+				colors: 200,
+				lossy: 35,
+				fuzz: 3,
+			}},
+		];
+
+		const downloadUrl = await stages.reduce(async (acc, stage, idx) => {
+			let url = await acc;
+			let formData;
+			if (!url) {
+				url = `https://s3.ezgif.com/${stage.id}`;
+				formData = await getForm({url, file, fileInfo});
+			}
+			else {
+				formData = await getForm({url});
+			}
+			return await commitForm({
+				stage: stage.id,
+				id: formData.id,
+				token: formData.token,
+				data: typeof stage.data === "function" ? stage.data(formData) : stage.data,
+				nextStage: (stages[idx + 1] || {}).id || "save",
+			});
+		}, Promise.resolve());
+		return downloadUrl;
+	}
+
 	router.post("/post", upload, async (req, res, next) => {
-		const results = (req.files || []).map(async fileInfo => {
-			console.log("fileInfo", fileInfo);
-			const file = await fs.readFile(fileInfo.path);
-			const downloadUrl = await stages.reduce(async (acc, stage, idx) => {
-				let url = await acc;
-				let formData;
-				if (!url) {
-					url = `https://s3.ezgif.com/${stage.id}`;
-					formData = await getForm({url, file, fileInfo});
-				}
-				else {
-					formData = await getForm({url});
-				}
-				return await commitForm({
-					stage: stage.id,
-					id: formData.id,
-					token: formData.token,
-					data: typeof stage.data === "function" ? stage.data(formData) : stage.data,
-					nextStage: (stages[idx + 1] || {}).id || "save",
-				});
-			}, Promise.resolve());
-			const destName = path.parse(downloadUrl);
-			const downName = path.parse(fileInfo.originalname);
-			const name = `${destName.name || ""}${destName.ext || ""}`;
-			const info = {download: `${downName.name || ""}${destName.ext || ""}`, name, url: downloadUrl};
-			fileNameMap[name] = info;
-			console.log("fileInfo", fileInfo);
-			fs.remove(fileInfo.path);
-			return info;
+		const isEzgif = "ezgif" in req.query;
+		const _results = (req.files || []).map(async fileInfo => {
+			try {
+				console.log("req.query", req.query);
+				console.log("fileInfo", fileInfo);
+				const downloadUrl = isEzgif
+					? (await ezgif(fileInfo))
+					: (await convert(fileInfo, {
+						scaleWidth: req.query.scaleWidth == null ? 230 : req.query.scaleWidth,
+						fps: req.query.fps == null ? 7 : req.query.fps,
+						compression: req.query.compression == null ? 35 : req.query.compression,
+						dither: req.query.dither,
+					}));
+				const destName = path.parse(downloadUrl);
+				const downName = path.parse(fileInfo.originalname);
+				const name = `${destName.name || ""}${destName.ext || ""}`;
+				const info = {
+					name,
+					download: `${downName.name || ""}${destName.ext || ""}`,
+					url: downloadUrl,
+					isEzgif,
+				};
+				fileNameMap[name] = info;
+				console.log("fileInfo", fileInfo);
+				return info;
+			}
+			finally {
+				fs.remove(fileInfo.path);
+			}
 		});
 
 		const errors = [];
-		Promise.all(results.map(i => i.catch(error => errors.push(error)))).then(results => {
-			res.status(200).json({
-				results,
-				errors,
-			});
+		let results = await Promise.all(_results.map(i => i.catch(error => {
+			return false;
+		})));
+		results = results
+			.filter((i, idx) => {
+				if (i === false) {
+					errors.push(_results[idx].name);
+				}
+				return i;
+			})
+			.map(({name, download}) => ({name, download}));
+		res.status(200).json({
+			results,
+			errors,
 		});
 	});
 
-	router.use("/", serveStatic("./app/static"), serveIndex("./app/static"));
+
+	router.use("/", serveStatic(distDir), serveIndex(distDir));
 	router.get("/img/:id", (req, res, next) => {
 		const urlInfo = fileNameMap[req.params.id];
 		try {
-			https.get(urlInfo.url, (response) => {
+			if (urlInfo.isEzgif) {
+				https.get(urlInfo.url, (response) => {
+					res.status(200);
+					res.header({"content-type": "image/gif"});
+					res.header({"content-disposition": `attachment; filename="${urlInfo.download}"`});
+					response.pipe(res);
+				});
+			}
+			else {
 				res.status(200);
 				res.header({"content-type": "image/gif"});
 				res.header({"content-disposition": `attachment; filename="${urlInfo.download}"`});
-				response.pipe(res);
-			});
+				fs.createReadStream(urlInfo.url).pipe(res);
+			}
 		}
 		catch (error) {
 			//
@@ -230,11 +284,13 @@ initFetch().then(async () => {
 	});
 
 	app.use("/", router);
-	app.use(morgan("dev"));
+	// app.use(morgan("dev"));
 
 	const server = http.createServer(app);
-
-	server.listen(argv.port || process.env.PORT || process.env.SERVER_PORT || 8080, argv.host || process.env.SERVER_HOST || process.env.IP || "0.0.0.0", (req, res) => {
+	const port = argv.port || process.env.PORT || process.env.SERVER_PORT || 8080;
+	const host = argv.host || process.env.SERVER_HOST || process.env.IP || "0.0.0.0";
+	console.log("before listen", port, host);
+	server.listen(port, host, (req, res) => {
 		const addr = server.address();
 
 		console.log(`Web server listening at http://${addr.address}:${addr.port}`);

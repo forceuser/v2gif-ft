@@ -80,7 +80,7 @@ function main () {
 		const body = new FormData();
 		files.forEach(file => body.append("file", file));
 		$(".page-loader").addClass("active");
-		const result = await fetch(`/post`, {
+		const result = await fetch(`/post?compression=0&dither=bayer`, {
 			method: "POST",
 			body,
 		}).then(response => response.json());
@@ -102,10 +102,12 @@ function main () {
 	});
 }
 
-Promise.all([
-	// pre init
-	initFetch(),
-]).then(async () => {
-	console.log("Fetch initialized");
-	main();
-});
+export default function () {
+	Promise.all([
+		// pre init
+		initFetch(),
+	]).then(async () => {
+		console.log("Fetch initialized");
+		main();
+	});
+}

@@ -67,15 +67,20 @@ self.addEventListener("fetch", event => {
 				}
 			}
 
-			const cachedResponse = await cache.match(request);
-			if (cachedResponse) {
-				return cachedResponse;
-			}
-			else {
+			try {
 				const response = await fetch(request);
 				console.log("put to cache", url);
 				cache.put(request, response.clone());
 				return response;
+			}
+			catch (error) {
+				const cachedResponse = await cache.match(request);
+				if (cachedResponse) {
+					return cachedResponse;
+				}
+				else {
+					throw error;
+				}
 			}
 		}
 		else {

@@ -4,15 +4,16 @@ const merge = require("webpack-merge");
 const baseConfig = require("./base.config.js");
 const webpack = require("webpack");
 
-module.exports = merge(baseConfig, {
-	mode: "development",
-	devServer: {
-		// index: "", // specify to enable root proxying
-		host: `${process.env.CLIENT_HOST || "0.0.0.0"}`,
-		port: `${process.env.CLIENT_PORT || "80"}`,
-		proxy: {"**": `http://${process.env.SERVER_HOST || "0.0.0.0"}:${process.env.SERVER_PORT || "3000"}`},
-	},
-});
-// module.exports.entry.index = [module.exports.entry.index, "webpack-hot-middleware/client"];
-module.exports.plugins = module.exports.plugins.map(i => i);
-// module.exports.plugins.push(new webpack.HotModuleReplacementPlugin());
+module.exports = (env = {}) => {
+	const base = baseConfig(env);
+	let result = merge(base, {
+		mode: "development",
+		devServer: {},
+	});
+
+	Object.keys(result.entry).forEach(key => {
+		result.entry[key] = ["webpack-hot-middleware/client?reload=true"].concat(result.entry[key]);
+	});
+	result.plugins.push(new webpack.HotModuleReplacementPlugin());
+	return result;
+}
