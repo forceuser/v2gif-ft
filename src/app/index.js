@@ -1,6 +1,7 @@
 import {default as fetchInterceptors, initFetch} from "./fetch-interceptors";
 import isMobile from "ismobilejs";
 import $ from "jquery";
+import filesize from "filesize";
 
 function updateDeviceType () {
 	const deviceType = isMobile.tablet
@@ -22,13 +23,7 @@ function main () {
 	const updateState = () => {
 		$form.find(`.file-list`).html(
 			files
-				.map(
-					(file, idx) => `
-			<li>${
-	file.name
-} [<a href="#" class="id--remove-file" idx="${idx}">удалить</a>]</li>
-		`
-				)
+				.map((file, idx) => `<li>${file.name} (${filesize(file.size, {locale: "ru"})}) [<a href="#" class="id--remove-file" idx="${idx}">удалить</a>]</li>`)
 				.join("")
 		);
 		$form.find(`button[type="submit"]`).prop("disabled", !files.length);
@@ -80,7 +75,7 @@ function main () {
 		const body = new FormData();
 		files.forEach(file => body.append("file", file));
 		$(".page-loader").addClass("active");
-		const result = await fetch(`/post?compression=0&dither=bayer`, {
+		const result = await fetch(`/post?compression=30&dither=sierra2`, {
 			method: "POST",
 			body,
 		}).then(response => response.json());
@@ -94,7 +89,7 @@ function main () {
 			<div class="result-item">
 				<img style="max-width: 90%;" src="/img/${i.name}" />
 				<div style="margin-top: 20px;">
-					<a href="/img/${i.name}" target="_blank" download="${i.download}">скачать</a>
+					<a href="/img/${i.name}" target="_blank" download="${i.download}">скачать (${filesize(i.size, {locale: "ru"})})</a>
 				</div>
 			</div>`
 			)

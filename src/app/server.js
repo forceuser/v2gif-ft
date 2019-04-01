@@ -229,6 +229,7 @@ initFetch().then(async () => {
 					name,
 					download: `${downName.name || ""}${destName.ext || ""}`,
 					url: downloadUrl,
+					size: (await fs.stat(downloadUrl)).size,
 					isEzgif,
 				};
 				fileNameMap[name] = info;
@@ -251,7 +252,7 @@ initFetch().then(async () => {
 				}
 				return i;
 			})
-			.map(({name, download}) => ({name, download}));
+			.map(({name, download, size}) => ({name, download, size}));
 		res.status(200).json({
 			results,
 			errors,
