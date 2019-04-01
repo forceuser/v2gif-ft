@@ -1,4 +1,3 @@
-import {default as fetchInterceptors, initFetch} from "./fetch-interceptors";
 import isMobile from "ismobilejs";
 import $ from "jquery";
 import filesize from "filesize";
@@ -97,12 +96,4 @@ function main () {
 	});
 }
 
-export default function () {
-	Promise.all([
-		// pre init
-		initFetch(),
-	]).then(async () => {
-		console.log("Fetch initialized");
-		main();
-	});
-}
+main();

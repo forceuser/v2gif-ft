@@ -243,12 +243,12 @@ initFetch().then(async () => {
 
 		const errors = [];
 		let results = await Promise.all(_results.map(i => i.catch(error => {
-			return false;
+			return JSON.stringify(error);
 		})));
 		results = results
 			.filter((i, idx) => {
-				if (i === false) {
-					errors.push(_results[idx].name);
+				if (typeof i === "string") {
+					errors.push(JSON.parse(i));
 				}
 				return i;
 			})

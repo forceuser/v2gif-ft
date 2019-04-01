@@ -1,6 +1,6 @@
 {
 	"name": "video2gif-ftband",
-	"version": "1.0.13",
+	"version": "1.0.14",
 	"main": "index.js",
 	"_moduleAliases": {
 		"@root": ".",
@@ -78,7 +78,7 @@
 	},
 	"devDependencies": {
 		"autoprefixer": "^9.1.5",
-		"babel-eslint": "^10.0.1",
+		"babel-eslint": ">=10.0.1",
 		"babel-loader": "^8.0.2",
 		"babel-minify": "^0.4.3",
 		"babel-plugin-istanbul": "^5.1.0",
@@ -86,7 +86,7 @@
 		"clean-css-cli": "^4.2.1",
 		"copyfiles": "^2.1.0",
 		"documentation": "^9.0.0",
-		"eslint": "^5.10.0",
+		"eslint": ">=5.16.0",
 		"expose-loader": "^0.7.5",
 		"faucet": "0.0.1",
 		"find-free-port": "^2.0.0",
