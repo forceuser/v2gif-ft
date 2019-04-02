@@ -46,15 +46,19 @@ function colorDistance (v1, v2) {
 
 function colorAvg (colors) {
 	const acc = colors.reduce((acc, i) => {
-		for (let n = 0; n < 4; n++) {
+		for (let n = 0; n < 3; n++) {
 			acc[n] += i[n];
 		}
 		return acc;
-	}, [0, 0, 0, 0]);
-	for (let n = 0; n < 4; n++) {
+	}, [0, 0, 0]);
+	for (let n = 0; n < 3; n++) {
 		acc[n] = Math.round(acc[n] / colors.length);
 	}
 	return acc;
+}
+
+function RGBArrayToHEX (color) {
+	return color.reduce((str, chVal) => (str += Math.round(chVal).toString(16).padStart(2, "0"), str), "#");
 }
 
 export async function videoToGif (srcPath, {scaleWidth = 230, fps = 7, compression = 35, dither} = {}) {
@@ -76,17 +80,20 @@ export async function videoToGif (srcPath, {scaleWidth = 230, fps = 7, compressi
 	const topRight = ctx.getImageData(w - 1, 0, 1, 1).data;
 	const bottomRight = ctx.getImageData(w - 1, h - 1, 1, 1).data;
 	const avg = colorAvg([topLeft, bottomLeft, topRight, bottomRight]);
-	console.log("avg", avg);
+	console.log("avg", RGBArrayToHEX(avg));
 	// find crop coordinates
 	const crop = getCrop();
 	console.log("crop", crop);
 
-	// const genPalleteCmd = `${ffmpeg} -i test.mov -an -filter_complex "[0:v] palettegen" -y palette.png`;
-	// const genUnoptimizedCmd = `${ffmpeg} -i test.mov -i palette.png -an -filter_complex "fps=${fps},crop=${crop.x2 - crop.x1}:${crop.y2 - crop.y1}:${crop.x1}:${crop.y1},scale=230:-2:flags=lanczos[x];[x][1:v]paletteuse" -y unoptimized.gif`;
 	const unoptimizedPath = path.resolve(__dirname, `${destPath}-unoptimized.gif`);
 	const optimizedPath = path.resolve(__dirname, `${destPath}.gif`);
-	const genOneStepCmd = `${ffmpeg} -i ${srcPath} -filter_complex "[0:v] fps=${fps},crop=${crop.x2 - crop.x1}:${crop.y2 - crop.y1}:${crop.x1}:${crop.y1},scale=${scaleWidth}:-2,split [a][b];[a] palettegen [p];[b][p] paletteuse${dither ? `=dither=${dither}` : ""}" -y ${unoptimizedPath}`;
-	const genOptimizedCmd = `${giflossy} --optimize=3 --lossy=${compression} -o ${optimizedPath} ${unoptimizedPath}`;
+	const scale = false;
+	const filters = `fps=${fps},crop=${crop.x2 - crop.x1}:${crop.y2 - crop.y1}:${crop.x1}:${crop.y1}${scale ? ",scale=${scaleWidth}:-2:flags=lanczos" : ""}`;
+	const genPalleteCmd = `${ffmpeg} -i ${srcPath} -an -filter_complex "${filters},palettegen=max_colors=255" -y ${destPath}-palette.png`;
+	const genUnoptimizedCmd = `${ffmpeg} -i ${srcPath} -i ${destPath}-palette.png -an -filter_complex "${filters} [x];[x][1:v] paletteuse${dither ? `=dither=${dither}` : ""}" -y ${unoptimizedPath}`;
+
+	// const genOneStepCmd = `${ffmpeg} -i ${srcPath} -filter_complex "[0:v] fps=${fps},crop=${crop.x2 - crop.x1}:${crop.y2 - crop.y1}:${crop.x1}:${crop.y1},scale=${scaleWidth}:-2,split [a][b];[a] palettegen [p];[b][p] paletteuse${dither ? `=dither=${dither}` : ""}" -y ${unoptimizedPath}`;
+	const genOptimizedCmd = `${giflossy} --optimize=3 --lossy=${compression} --resize-fit-width=${scaleWidth} -o ${optimizedPath} ${unoptimizedPath}`;
 
 	// console.log("generating gif pallete...");
 	// await execAsync(genPalleteCmd);
@@ -94,10 +101,13 @@ export async function videoToGif (srcPath, {scaleWidth = 230, fps = 7, compressi
 	// await execAsync(genUnoptimizedCmd);
 
 	console.log("generating unoptimized gif file...");
-	await execAsync(genOneStepCmd);
+	await execAsync(genPalleteCmd);
+	await execAsync(genUnoptimizedCmd);
+	// await execAsync(genOneStepCmd);
 	console.log("optimizing gif...");
 	await execAsync(genOptimizedCmd);
 	fs.remove(`${destPath}-frame.png`);
+	fs.remove(`${destPath}-palette.png`);
 	fs.remove(`${unoptimizedPath}`);
 	return optimizedPath;
 
@@ -111,8 +121,8 @@ export async function videoToGif (srcPath, {scaleWidth = 230, fps = 7, compressi
 		for (let y = 0; y < h; y++) {
 			for (let x = 0; x < w; x++) {
 				const idx = ((y * w) + x) * 4;
-				const rgba = [pixels[idx], pixels[idx + 1], pixels[idx + 2], pixels[idx + 3]];
-				if (colorDistance(rgba, avg) > fuzz) {
+				const rgb = [pixels[idx], pixels[idx + 1], pixels[idx + 2]];
+				if (colorDistance(rgb, avg) > fuzz) {
 					if (y < y1) {
 						y1 = y;
 					}
@@ -128,7 +138,8 @@ export async function videoToGif (srcPath, {scaleWidth = 230, fps = 7, compressi
 				}
 			}
 		}
-		return {x1, y1, x2, y2};
+		const gap = 2;
+		return {x1: Math.max(0, x1 - gap), y1: Math.max(0, y1 - gap), x2: Math.min(w, x2 + gap * 2), y2: Math.min(h, y2 + gap * 2)};
 	}
 }
 

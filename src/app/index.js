@@ -74,7 +74,13 @@ function main () {
 		const body = new FormData();
 		files.forEach(file => body.append("file", file));
 		$(".page-loader").addClass("active");
-		const result = await fetch(`/post?compression=30&dither=sierra2`, {
+		const params = {
+			compression: 30,
+			dither: "sierra2",
+			// dither: "bayer:bayer_scale=5"
+		};
+
+		const result = await fetch(`/post?${Object.keys(params).map(key => `${key}=${params[key]}`).join("&")}`, { // &dither=sierra2
 			method: "POST",
 			body,
 		}).then(response => response.json());
@@ -96,4 +102,4 @@ function main () {
 	});
 }
 
-main();
+export default main;
