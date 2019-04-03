@@ -89,7 +89,7 @@ export async function videoToGif (srcPath, {scaleWidth = 230, fps = 7, compressi
 	const optimizedPath = path.resolve(__dirname, `${destPath}.gif`);
 	const scale = false;
 	const filters = `fps=${fps},crop=${crop.x2 - crop.x1}:${crop.y2 - crop.y1}:${crop.x1}:${crop.y1}${scale ? ",scale=${scaleWidth}:-2:flags=lanczos" : ""}`;
-	const genPalleteCmd = `${ffmpeg} -i ${srcPath} -an -filter_complex "${filters},palettegen=max_colors=255" -y ${destPath}-palette.png`;
+	const genPalleteCmd = `${ffmpeg} -i ${srcPath} -an -filter_complex "${filters},palettegen=stats_mode=full:max_colors=240:reserve_transparent=1:transparency_color=${RGBArrayToHEX(avg)}" -y ${destPath}-palette.png`;
 	const genUnoptimizedCmd = `${ffmpeg} -i ${srcPath} -i ${destPath}-palette.png -an -filter_complex "${filters} [x];[x][1:v] paletteuse${dither ? `=dither=${dither}` : ""}" -y ${unoptimizedPath}`;
 
 	// const genOneStepCmd = `${ffmpeg} -i ${srcPath} -filter_complex "[0:v] fps=${fps},crop=${crop.x2 - crop.x1}:${crop.y2 - crop.y1}:${crop.x1}:${crop.y1},scale=${scaleWidth}:-2,split [a][b];[a] palettegen [p];[b][p] paletteuse${dither ? `=dither=${dither}` : ""}" -y ${unoptimizedPath}`;

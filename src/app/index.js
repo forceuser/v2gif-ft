@@ -76,7 +76,9 @@ function main () {
 		$(".page-loader").addClass("active");
 		const params = {
 			compression: 30,
-			dither: "sierra2",
+			dither: "sierra2_4a:diff_mode=rectangle",
+			scaleWidth: 230,
+			fps: 7,
 			// dither: "bayer:bayer_scale=5"
 		};
 
