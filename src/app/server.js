@@ -10,13 +10,13 @@ import express from "express";
 import serveIndex from "serve-index";
 import serveStatic from "serve-static";
 import morgan from "morgan";
-import proxy from "express-http-proxy";
 import {JSDOM} from "jsdom";
 import https from "https";
 import yargs from "yargs";
 import globby from "globby";
 import {videoToGif} from "./video-to-gif";
 import {URL} from "universal-url";
+import invokeMiddleware from "./invoke-middleware";
 
 // console.log("process.mainModule", process.mainModule);
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
@@ -207,6 +207,24 @@ initFetch().then(async () => {
 		}, Promise.resolve());
 		return downloadUrl;
 	}
+
+	router.get("/proxy-csp", async (req, res, next) => {
+		const url = req.query.url;
+		https.get(url, (response) => {
+			res.header(Object.assign(response.headers, {"access-control-allow-origin": "*"}));
+			response.pipe(res);
+		});
+		// return invokeMiddleware([
+		// 	proxyMiddleware("**", {
+		// 		target: url,
+		// 		secure: false,
+		// 		changeOrigin: false,
+		// 		onProxyRes (proxyRes, req, res) {
+		// 			proxyRes.headers["access-control-allow-origin"] = "*";
+		// 		}
+		// 	})
+		// ], req, res);
+	});
 
 	router.post("/post", upload, async (req, res, next) => {
 		const isEzgif = "ezgif" in req.query;
