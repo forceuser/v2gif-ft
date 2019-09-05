@@ -1,6 +1,6 @@
 {
 	"name": "video2gif-ftband",
-	"version": "1.0.19",
+	"version": "1.0.20",
 	"main": "index.js",
 	"_moduleAliases": {
 		"@root": ".",
@@ -74,6 +74,7 @@
 		"serve-static": "^1.13.2",
 		"shelljs": "^0.8.3",
 		"universal-url": "^2.0.0",
+		"uuid": "^3.3.3",
 		"yargs": "^12.0.2"
 	},
 	"devDependencies": {

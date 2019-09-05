@@ -17,6 +17,7 @@ import globby from "globby";
 import {videoToGif} from "./video-to-gif";
 import {URL} from "universal-url";
 import invokeMiddleware from "./invoke-middleware";
+import uuid from "uuid/v1";
 
 // console.log("process.mainModule", process.mainModule);
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
@@ -275,6 +276,77 @@ initFetch().then(async () => {
 			results,
 			errors,
 		});
+	});
+
+	const tasks = {};
+
+	async function addTask (id, req) {
+		const _results = (req.files || []).map(async fileInfo => {
+			try {
+				const downloadUrl =	await convert(fileInfo, {
+					scaleWidth: req.query.scaleWidth == null ? 230 : req.query.scaleWidth,
+					fps: req.query.fps == null ? 7 : req.query.fps,
+					compression: req.query.compression == null ? 35 : req.query.compression,
+					dither: req.query.dither,
+				})
+				const destName = path.parse(downloadUrl);
+				const downName = path.parse(fileInfo.originalname);
+				const name = `${destName.name || ""}${destName.ext || ""}`;
+				const info = {
+					name,
+					download: `${downName.name || ""}${destName.ext || ""}`,
+					url: downloadUrl,
+					size: (await fs.stat(downloadUrl)).size,
+					isEzgif: false,
+				};
+				fileNameMap[name] = info;
+				console.log("fileInfo", fileInfo);
+				return info;
+			}
+			finally {
+				fs.remove(fileInfo.path);
+			}
+		});
+
+		const errors = [];
+		let results = await Promise.all(_results.map(i =>
+			i.catch(error => {
+				console.log("ERROR", error);
+				return JSON.stringify(error);
+			}
+		)));
+		results = results
+			.filter((i, idx) => {
+				if (typeof i === "string") {
+					errors.push(JSON.parse(i));
+				}
+				return i;
+			})
+			.map(({name, download, size}) => ({name, download, size}));
+		tasks[id].resolved = true;
+		return {results, errors};
+	}
+
+	router.get("/task/:id", upload, async (req, res, next) => {
+		const id = req.params.id;
+		if (tasks[id]) {
+			if (tasks[id].resolved) {
+				const result = await tasks[id].promise;
+				res.status(200).json({result, resolved: true});
+			}
+			else {
+				res.status(200).json({resolved: false});
+			}
+		}
+	});
+
+	router.post("/task", upload, async (req, res, next) => {
+		const id = uuid();
+		tasks[id] = {
+			promise: addTask(id, req),
+			resolved: false,
+		};
+		res.status(200).json({id});
 	});
 
 

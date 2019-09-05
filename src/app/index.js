@@ -82,10 +82,22 @@ function main () {
 			// dither: "bayer:bayer_scale=5"
 		};
 
-		const result = await fetch(`/post?${Object.keys(params).map(key => `${key}=${params[key]}`).join("&")}`, { // &dither=sierra2
+		let result = await fetch(`/task?${Object.keys(params).map(key => `${key}=${params[key]}`).join("&")}`, { // &dither=sierra2
 			method: "POST",
 			body,
-		}).then(response => response.json());
+		})
+			.then(response => response.json());
+		const taskId = result.id;
+		let resolved = false;
+		while (!resolved) {
+
+			result = await fetch(`/task/${taskId}`).then(response => response.json());
+			resolved = result.resolved;
+			if (!resolved) {
+				await new Promise(resolve => setTimeout(resolve, 3000));
+			}
+		}
+		result = result.result;
 		$(".page-result").addClass("active");
 		$(".page-upload").removeClass("active");
 		$(".page-loader").removeClass("active");
