@@ -4,8 +4,10 @@ import {Buffer} from "buffer";
 import {URL} from "universal-url";
 import {createCanvas, loadImage} from "canvas";
 import {exec} from "shelljs";
-import giflossy from "giflossy";
-import ffmpeg from "ffmpeg-binaries";
+import gifsicleBinPath from "gifsicle";
+import ffmpegBinPath from "ffmpeg-static";
+import commandExists from "./command-exists.js";
+import "colors";
 
 
 export const getPoint = (x, y, imageData, alpha = true) => {
@@ -158,6 +160,15 @@ function crop (canvas, rect) {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	ctx.drawImage(cpy, rect.left, rect.top, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
 }
+let gifsicle;
+let ffmpeg;
+async function init () {
+	gifsicle = (await commandExists("gifsicle"))[0] || gifsicleBinPath;
+	ffmpeg = (await commandExists("ffmpeg"))[0] || ffmpegBinPath;
+	console.log("gifsicle bin".green, gifsicle);
+	console.log("ffmpeg bin:".green, ffmpeg);
+}
+init();
 
 export async function videoToGif (srcPath, {scaleWidth = 230, fps = 7, compression = 35, dither} = {}) {
 	console.log("starting compression", srcPath);
@@ -194,6 +205,8 @@ export async function videoToGif (srcPath, {scaleWidth = 230, fps = 7, compressi
 	console.log("linesData", linesData);
 	console.log("cropData2", cropData);
 
+
+
 	const unoptimizedPath = path.resolve(__dirname, `${destPath}-unoptimized.gif`);
 	const optimizedPath = path.resolve(__dirname, `${destPath}.gif`);
 	const scale = false;
@@ -202,7 +215,7 @@ export async function videoToGif (srcPath, {scaleWidth = 230, fps = 7, compressi
 	const genUnoptimizedCmd = `${ffmpeg} -i ${srcPath} -i ${destPath}-palette.png -an -filter_complex "${filters} [x];[x][1:v] paletteuse${dither ? `=dither=${dither}` : ""}" -y ${unoptimizedPath}`;
 
 	// const genOneStepCmd = `${ffmpeg} -i ${srcPath} -filter_complex "[0:v] fps=${fps},crop=${crop.x2 - crop.x1}:${crop.y2 - crop.y1}:${crop.x1}:${crop.y1},scale=${scaleWidth}:-2,split [a][b];[a] palettegen [p];[b][p] paletteuse${dither ? `=dither=${dither}` : ""}" -y ${unoptimizedPath}`;
-	const genOptimizedCmd = `${giflossy} --optimize=3 --lossy=${compression} --resize-fit-width=${scaleWidth} -o ${optimizedPath} ${unoptimizedPath}`;
+	const genOptimizedCmd = `${gifsicle} --optimize=3 --lossy=${compression} --resize-fit-width=${scaleWidth} -o ${optimizedPath} ${unoptimizedPath}`;
 
 	// console.log("generating gif pallete...");
 	// await execAsync(genPalleteCmd);
@@ -213,7 +226,7 @@ export async function videoToGif (srcPath, {scaleWidth = 230, fps = 7, compressi
 	await execAsync(genPalleteCmd);
 	await execAsync(genUnoptimizedCmd);
 	// await execAsync(genOneStepCmd);
-	console.log("optimizing gif...");
+	console.log("optimizing gif...", genOptimizedCmd);
 	await execAsync(genOptimizedCmd);
 	fs.remove(`${destPath}-frame.png`);
 	fs.remove(`${destPath}-palette.png`);
