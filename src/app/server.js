@@ -1,5 +1,5 @@
 /* global process */
-import {default as fetchInterceptors, initFetch} from "./fetch-interceptors";
+import {default as fetchInterceptors, initFetch} from "./fetch-interceptors.js";
 // import "isomorphic-fetch";
 import path from "path";
 import FormData from "form-data";
@@ -10,14 +10,16 @@ import express from "express";
 import serveIndex from "serve-index";
 import serveStatic from "serve-static";
 import morgan from "morgan";
-import {JSDOM} from "jsdom";
+import jsdom from "jsdom";
 import https from "https";
 import yargs from "yargs";
 import globby from "globby";
-import {videoToGif} from "./video-to-gif";
-import {URL} from "universal-url";
-import invokeMiddleware from "./invoke-middleware";
-import uuid from "uuid/v1";
+import {videoToGif} from "./video-to-gif.js";
+import invokeMiddleware from "./invoke-middleware.js";
+import uuid from "uuid/v1.js";
+
+
+const {JSDOM} = jsdom;
 
 // console.log("process.mainModule", process.mainModule);
 const __dirname = path.dirname(new URL(import.meta.url).pathname);

@@ -1,14 +1,15 @@
 import path from "path";
 import fs from "fs-extra";
 import {Buffer} from "buffer";
-import {URL} from "universal-url";
-import {createCanvas, loadImage} from "canvas";
-import {exec} from "shelljs";
-import gifsicleBinPath from "gifsicle";
-import ffmpegBinPath from "ffmpeg-static";
-import commandExists from "./command-exists.js";
+import canvas from "canvas";
+import {exec, tryA} from "../../build-utils/common.js";
+// import gifsicleBinPath from "gifsicle";
+// import ffmpegBinPath from "ffmpeg-static";
+import commandExists from "../../build-utils/command-exists.js";
 import "colors";
+const {createCanvas, loadImage} = canvas;
 
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 export const getPoint = (x, y, imageData, alpha = true) => {
 	const data = imageData.data;
@@ -55,8 +56,6 @@ function execAsync (command, options = {}) {
 		reject = rej;
 	});
 }
-
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 function colorAvg (colors) {
 	const acc = colors.reduce((acc, i) => {
@@ -163,14 +162,15 @@ function crop (canvas, rect) {
 let gifsicle;
 let ffmpeg;
 async function init () {
-	gifsicle = (await commandExists("gifsicle"))[0] || gifsicleBinPath;
-	ffmpeg = (await commandExists("ffmpeg"))[0] || ffmpegBinPath;
+	gifsicle = (await tryA(() => commandExists("gifsicle"), []))[0] || (path.resolve(__dirname, "../../build-utils/bin/gifsicle"));
+	ffmpeg = (await tryA(() => commandExists("ffmpeg"), []))[0] || (await import("ffmpeg-static"));
 	console.log("gifsicle bin".green, gifsicle);
 	console.log("ffmpeg bin:".green, ffmpeg);
 }
-init();
+init.initialized = init();
 
 export async function videoToGif (srcPath, {scaleWidth = 230, fps = 7, compression = 35, dither} = {}) {
+	await init.initialized;
 	console.log("starting compression", srcPath);
 	console.log("options", {scaleWidth, fps, compression, dither});
 	const ext = path.extname(srcPath);

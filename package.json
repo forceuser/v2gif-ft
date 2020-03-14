@@ -2,6 +2,7 @@
 	"name": "video2gif-ftband",
 	"version": "1.0.21",
 	"main": "index.js",
+	"type": "module",
 	"_moduleAliases": {
 		"@root": ".",
 		"app": "./src/app"
@@ -12,10 +13,14 @@
 		"xopen": "http://localhost:8181",
 		"proxy": "http://localhost:8180"
 	},
+	"va-release": {
+		"library": "v2gif"
+	},
 	"scripts": {
+		"postinstall": "node ./build-utils/build-binaries.js",
 		"fix": "eslint --fix ./src/app/",
-		"start": "./build-utils/run-esm.js -s ./src/app/server",
-		"start-dev": "./build-utils/run-esm.js -s ./src/app/server -p 8180",
+		"start": "node ./src/app/server",
+		"start-dev": "node ./src/app/server -p 8180",
 		"init": "rm -rf ./node-modules/ > /dev/null && npm i",
 		"build": "run-s clean-js bump build:* copyfiles minify:*",
 		"dev": "run-p start-dev build-and-minify:less copyfiles dev:less \"dev:js -- {@}\" --",
@@ -26,8 +31,8 @@
 		"build-dev": "run-p build:templates build:sprites build-and-minify:less copyfiles clean-and-build-dev-js",
 		"build-dev-js": "NODE_ENV=development BABEL_ENV=development webpack --config ./webpack/development.config.js",
 		"copyfiles": "copyfiles -f ./src/sw.js ./dist/",
-		"dev:js": "./build-utils/run-esm.js -s ./build-utils/dev-server.js",
-		"dev:less": "watch -p './src/less/*.less' -c 'npm run build-and-minify:less'",
+		"dev:js": "node ./build-utils/dev-server.js",
+		"dev:less": "chokidar './src/less/*.less' -c 'npm run build-and-minify:less'",
 		"minify:less": "foreach -g './dist/css/index.css' -i './dist/css/index.min.css' -x 'uglifycss #{path} --output #{dir}/#{name}.min#{ext}'",
 		"build-and-minify:less": "run-p build:less minify:less"
 	},
@@ -46,6 +51,7 @@
 		"@babel/register": "^7.8.6",
 		"bodymovin": "^4.13.0",
 		"canvas": "^2.6.1",
+		"chokidar-cli": "^2.1.0",
 		"colors": "^1.4.0",
 		"cross-env": "^4.0.0",
 		"deepmerge": "^2.2.1",
@@ -56,14 +62,13 @@
 		"filesize": "^4.2.1",
 		"form-data": "^2.5.1",
 		"fs-extra": "^7.0.1",
-		"giflossy": "^3.0.41",
-		"gifsicle": "^5.0.0",
 		"gsap": "^1.20.2",
 		"html-template-tag": "^1.0.0",
 		"ismobilejs": "^0.4.1",
 		"isomorphic-fetch": "github:forceuser/isomorphic-fetch",
 		"jquery": "^3.4.1",
 		"jsdom": "^12.2.0",
+		"jszip": "^3.2.2",
 		"module-alias": "^2.2.2",
 		"moment": "^2.24.0",
 		"morgan": "^1.9.0",
@@ -74,6 +79,7 @@
 		"serve-static": "^1.14.1",
 		"shelljs": "^0.8.3",
 		"universal-url": "^2.0.0",
+		"unzipper": "^0.10.10",
 		"uuid": "^3.4.0",
 		"yargs": "^12.0.5"
 	},
@@ -105,8 +111,10 @@
 		"ngrok": "^3.2.7",
 		"npm-run-all": "^4.1.3",
 		"nyc": "^13.3.0",
+		"open": "^7.0.3",
 		"opn": "^5.5.0",
 		"postcss-cli": "^6.1.3",
+		"sync-directory": "^2.1.0",
 		"uglifycss": "0.0.29",
 		"watch-cli": "^0.2.3",
 		"webpack": "^4.42.0",

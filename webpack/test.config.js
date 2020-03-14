@@ -3,8 +3,6 @@ const path = require("path");
 const merge = require("webpack-merge");
 const baseConfig = require("./base.config.js");
 const webpack = require("webpack");
-const isWSL = require("is-wsl");
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = (env = {}) => {
 	const result = merge(baseConfig(env), {
@@ -13,11 +11,11 @@ module.exports = (env = {}) => {
 	result.target = "node";
 	result.entry = [
 		"@babel/polyfill",
-		path.resolve(__dirname, "../test/index.js")
+		path.resolve(__dirname, "../test/index.js"),
 	];
 	result.output = {
 		path: path.resolve(__dirname, "../test/build"),
-		filename: "index.js"
+		filename: "index.js",
 	};
 
 	// result.plugins.push(new webpack.optimize.MinChunkSizePlugin({minChunkSize: 100000}));

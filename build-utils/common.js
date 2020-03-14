@@ -33,6 +33,24 @@ export function fileExists (path) {
 	return false;
 }
 
+export const tryEx = (fn, failValue) => {
+	try {return fn();}
+	catch (error) {return failValue;}
+};
+export const tryA = async (fn, failValue) => {
+	try {return await fn();}
+	catch (error) {return failValue;}
+};
+
+export function getJSON (uri, packageDir) {
+	try {
+		return JSON.parse(fs.readFileSync(path.resolve(packageDir || getPackageDir(), uri), "utf8"));
+	}
+	catch (error) {
+		return {};
+	}
+}
+
 export function getPackageDir () {
 	let p = "./";
 	let ex;

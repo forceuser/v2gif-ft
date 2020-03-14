@@ -1,3 +1,13 @@
-# Browsers that we support
+# engines support
 
-last 2 Chrome versions
+[legacy]
+chrome >= 49
+firefox >= 18
+edge >= 12
+opera >= 36
+safari >= 10
+
+[modern]
+last 2 chrome versions
+last 2 firefox versions
+last 2 safari versions

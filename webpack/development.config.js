@@ -1,19 +1,18 @@
 /* global __dirname process */
-const path = require("path");
-const merge = require("webpack-merge");
-const baseConfig = require("./base.config.js");
-const webpack = require("webpack");
+import path from "path";
+import merge from "webpack-merge";
+import baseConfig from "./base.config.js";
+import webpack from "webpack";
 
-module.exports = (env = {}) => {
+export default (env = {}) => {
 	const base = baseConfig(env);
-	let result = merge(base, {
+	const result = merge(base, {
 		mode: "development",
 		devServer: {},
 	});
-
 	Object.keys(result.entry).forEach(key => {
-		result.entry[key] = ["webpack-hot-middleware/client?reload=true"].concat(result.entry[key]);
+		result.entry[key] = [`webpack-hot-middleware/client?${base.name ? `name=${base.name}&` : ``}reload=true`].concat(result.entry[key]);
 	});
 	result.plugins.push(new webpack.HotModuleReplacementPlugin());
 	return result;
-}
+};
