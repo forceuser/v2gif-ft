@@ -219,8 +219,8 @@ export async function videoToGif (srcPath, {scaleWidth = 230, fps = 7, compressi
 	await exec(genOptimizedCmd, {silent: true});
 
 
-	await exec(`ffmpeg -i ${srcPath} -threads 8 -c:v libx264 -crf 30 -maxrate 20M -bufsize 25M -preset veryslow -tune fastdecode -profile:v main -level 4.0 -color_primaries bt709 -color_trc bt709 -colorspace bt709 -vf "crop=${cropData.right - cropData.left}:${cropData.bottom - cropData.top}:${cropData.left}:${cropData.top},scale=w=${scaleWidth * 2}:h=-1,scale=trunc(iw/2)*2:trunc(ih/2)*2" -an -y ${destPath}-pre-video.mp4`, {silent: true});
-	await exec(`ffmpeg -i ${destPath}-pre-video.mp4 -an -shortest -movflags +faststart -map_metadata -1 -write_tmcd 0  -c:v copy -c:a copy -y ${destPath}.mp4`, {silent: true});
+	await exec(`${ffmpeg} -i ${srcPath} -threads 8 -c:v libx264 -crf 30 -maxrate 20M -bufsize 25M -preset veryslow -tune fastdecode -profile:v main -level 4.0 -color_primaries bt709 -color_trc bt709 -colorspace bt709 -vf "crop=${cropData.right - cropData.left}:${cropData.bottom - cropData.top}:${cropData.left}:${cropData.top},scale=w=${scaleWidth * 2}:h=-1,scale=trunc(iw/2)*2:trunc(ih/2)*2" -an -y ${destPath}-pre-video.mp4`, {silent: true});
+	await exec(`${ffmpeg} -i ${destPath}-pre-video.mp4 -an -shortest -movflags +faststart -map_metadata -1 -write_tmcd 0  -c:v copy -c:a copy -y ${destPath}.mp4`, {silent: true});
 
 	fs.remove(`${destPath}-frame.png`);
 	fs.remove(`${destPath}-palette.png`);

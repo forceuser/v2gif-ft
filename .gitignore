@@ -1,6 +1,6 @@
 node_modules
-./uploads
-./test/build
+uploads
+test/build
 uploads
 coverage
-./build-utils/sources/
+build-utils/sources
