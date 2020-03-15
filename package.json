@@ -20,8 +20,7 @@
 		"library": "v2gif"
 	},
 	"scripts": {
-		"webpackH": "webpack migrate",
-		"postinstall": "node ./build-utils/build-binaries.js",
+		"x-postinstall": "node ./build-utils/build-binaries.js",
 		"fix": "eslint --fix ./src/app/",
 		"start": "node ./index.js",
 		"start-dev": "node ./index.js -p 8180",
