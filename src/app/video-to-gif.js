@@ -40,23 +40,6 @@ function streamToString (stream) {
 	});
 }
 
-function execAsync (command, options = {}) {
-	let resolve;
-	let reject;
-	exec(command, Object.assign({async: true, silent: true}, options), (code, stdout, stderr) => {
-		if (code !== 0) {
-			reject(stderr);
-		}
-		else {
-			resolve(stdout);
-		}
-	});
-	return new Promise((res, rej) => {
-		resolve = res;
-		reject = rej;
-	});
-}
-
 function colorAvg (colors) {
 	const acc = colors.reduce((acc, i) => {
 		for (let n = 0; n < 3; n++) {
@@ -167,6 +150,7 @@ async function init () {
 	console.log("gifsicle bin".green, gifsicle);
 	console.log("ffmpeg bin:".green, ffmpeg);
 }
+
 init.initialized = init();
 
 export async function videoToGif (srcPath, {scaleWidth = 230, fps = 7, compression = 35, dither} = {}) {
@@ -175,7 +159,8 @@ export async function videoToGif (srcPath, {scaleWidth = 230, fps = 7, compressi
 	console.log("options", {scaleWidth, fps, compression, dither});
 	const ext = path.extname(srcPath);
 	const destPath = path.join(path.dirname(srcPath), path.basename(srcPath, ext));
-	await execAsync(`${ffmpeg} -i ${srcPath} -vf select="eq(pict_type\\,I)" -vsync vfr -vframes 1 -q:v 2 -y ${destPath}-frame.png`);
+	await exec(`${ffmpeg} -i ${srcPath} -vf select="eq(pict_type\\,I)" -vsync vfr -vframes 1 -q:v 2 -y ${destPath}-frame.png`, {silent: true});
+	console.log("Frame taken");
 	const image = await loadImage(path.resolve(__dirname, `${destPath}-frame.png`));
 	const w = image.naturalWidth;
 	const h = image.naturalHeight;
@@ -218,20 +203,25 @@ export async function videoToGif (srcPath, {scaleWidth = 230, fps = 7, compressi
 	const genOptimizedCmd = `${gifsicle} --optimize=3 --lossy=${compression} --resize-fit-width=${scaleWidth} -o ${optimizedPath} ${unoptimizedPath}`;
 
 	// console.log("generating gif pallete...");
-	// await execAsync(genPalleteCmd);
+	// await exec(genPalleteCmd, {silent: true});
 	// console.log("generating unoptimized gif file...");
-	// await execAsync(genUnoptimizedCmd);
+	// await exec(genUnoptimizedCmd, {silent: true});
 
 	console.log("generating unoptimized gif file...");
-	await execAsync(genPalleteCmd);
-	await execAsync(genUnoptimizedCmd);
-	// await execAsync(genOneStepCmd);
-	console.log("optimizing gif...", genOptimizedCmd);
-	await execAsync(genOptimizedCmd);
+	await exec(genPalleteCmd, {silent: true});
+	await exec(genUnoptimizedCmd, {silent: true});
+	// await exec(genOneStepCmd, {silent: true});
+	console.log("optimizing gif...");
+	await exec(genOptimizedCmd, {silent: true});
+
+
+	await exec(`ffmpeg -i ${srcPath} -threads 8 -c:v libx264 -crf 30 -maxrate 20M -bufsize 25M -preset veryslow -tune fastdecode -profile:v main -level 4.0 -color_primaries bt709 -color_trc bt709 -colorspace bt709 -vf "crop=${cropData.right - cropData.left}:${cropData.bottom - cropData.top}:${cropData.left}:${cropData.top},scale=w=${scaleWidth * 2}:h=-1,scale=trunc(iw/2)*2:trunc(ih/2)*2" -an -y ${destPath}-pre-video.mp4`, {silent: true});
+	await exec(`ffmpeg -i ${destPath}-pre-video.mp4 -an -shortest -movflags +faststart -map_metadata -1 -write_tmcd 0  -c:v copy -c:a copy -y ${destPath}.mp4`, {silent: true});
+
 	fs.remove(`${destPath}-frame.png`);
 	fs.remove(`${destPath}-palette.png`);
+	fs.remove(`${destPath}-pre-video.mp4`);
 	fs.remove(`${unoptimizedPath}`);
-	return optimizedPath;
 }
 
 

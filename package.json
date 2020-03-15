@@ -19,8 +19,8 @@
 	"scripts": {
 		"postinstall": "node ./build-utils/build-binaries.js",
 		"fix": "eslint --fix ./src/app/",
-		"start": "node ./src/app/server",
-		"start-dev": "node ./src/app/server -p 8180",
+		"start": "node ./index.js",
+		"start-dev": "node ./index.js -p 8180",
 		"init": "rm -rf ./node-modules/ > /dev/null && npm i",
 		"build": "run-s clean-js bump build:* copyfiles minify:*",
 		"dev": "run-p start-dev build-and-minify:less copyfiles dev:less \"dev:js -- {@}\" --",

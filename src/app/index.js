@@ -16,7 +16,13 @@ function updateDeviceType () {
 
 updateDeviceType();
 
+
+
 function main () {
+	// a0608b80-6650-11ea-a800-c953f9a48260
+	const url = new URL(window.location.href);
+
+
 	let files = [];
 	const $form = $("form.page-upload");
 	const updateState = () => {
@@ -49,6 +55,7 @@ function main () {
 			files = [...files, ...event.originalEvent.dataTransfer.files];
 			updateState();
 		});
+
 	$form.find(".id--add-files").on("click", () => {
 		$(`#file-form`).remove();
 		const form = $(
@@ -69,6 +76,56 @@ function main () {
 		$(".page-upload").addClass("active");
 		$(".page-result").removeClass("active");
 	});
+
+	async function resultScreen (taskId) {
+		$(".page-loader").addClass("active");
+		let resolved = false;
+		let result;
+		function fail () {
+			const newurl = new URL(window.location);
+			newurl.searchParams.delete("task");
+			window.location.href = newurl.toString();
+		}
+		while (!resolved) {
+			try {
+				result = await fetch(`/task/${taskId}`).then(response => response.json());
+			}
+			catch (error) {
+				return fail();
+			}
+
+			resolved = result.resolved;
+			if (!resolved) {
+				await new Promise(resolve => setTimeout(resolve, 3000));
+			}
+		}
+		result = result.result;
+		$(".page-result").addClass("active");
+		$(".page-upload").removeClass("active");
+		$(".page-loader").removeClass("active");
+		console.log("TASK", result);
+		const list = $(".result-list");
+		list.html(
+			(result.results || []).map(
+				i => `
+					<div class="result-item">
+						<img style="max-width: 90%;" src="/file/${i.id}.gif" />
+						<div style="margin-top: 20px;">
+							<a href="/file/${i.id}.gif" target="_blank" download="${i.original}.gif">скачать gif (${filesize(i.size.gif, {locale: "ru"})})</a>
+						</div>
+					</div>
+					<div class="result-item">
+						<video style="max-width: 90%; width: 230px;" autoplay playsinline muted disableremoteplayback src="/file/${i.id}.mp4">
+						</video>
+						<div style="margin-top: 20px;">
+							<a href="/file/${i.id}.mp4" target="_blank" download="${i.original}.mp4">скачать mp4 (${filesize(i.size.mp4, {locale: "ru"})})</a>
+						</div>
+					</div>
+				`
+			)
+		);
+	}
+
 	$form.on("submit", async event => {
 		event.preventDefault();
 		const body = new FormData();
@@ -82,38 +139,21 @@ function main () {
 			// dither: "bayer:bayer_scale=5"
 		};
 
-		let result = await fetch(`/task?${Object.keys(params).map(key => `${key}=${params[key]}`).join("&")}`, { // &dither=sierra2
+		const result = await fetch(`/task?${Object.keys(params).map(key => `${key}=${params[key]}`).join("&")}`, { // &dither=sierra2
 			method: "POST",
 			body,
 		})
 			.then(response => response.json());
-		const taskId = result.id;
-		let resolved = false;
-		while (!resolved) {
-
-			result = await fetch(`/task/${taskId}`).then(response => response.json());
-			resolved = result.resolved;
-			if (!resolved) {
-				await new Promise(resolve => setTimeout(resolve, 3000));
-			}
-		}
-		result = result.result;
-		$(".page-result").addClass("active");
-		$(".page-upload").removeClass("active");
-		$(".page-loader").removeClass("active");
-		const list = $(".result-list");
-		list.html(
-			(result.results || []).map(
-				i => `
-			<div class="result-item">
-				<img style="max-width: 90%;" src="/img/${i.name}" />
-				<div style="margin-top: 20px;">
-					<a href="/img/${i.name}" target="_blank" download="${i.download}">скачать (${filesize(i.size, {locale: "ru"})})</a>
-				</div>
-			</div>`
-			)
-		);
+		const newurl = new URL(window.location);
+		newurl.searchParams.set("task", result.id);
+		history.pushState({}, document.title, newurl.toString());
+		resultScreen(result.id);
 	});
+	console.log(`url.searchParams.get("task")`, url.searchParams.get("task"));
+	if (url.searchParams.get("task")) {
+
+		resultScreen(url.searchParams.get("task"));
+	}
 }
 
 export default main;

@@ -20,11 +20,11 @@ export default (env = {}) => {
 		]},
 		output: {
 			path: path.resolve(__dirname, "../dist/js"),
-			filename: `index${env.WEBPACK_BUNDLE_SUFFIX || ""}.js`,
-			library: vasettings.library,
+			filename: "index.js",
+			publicPath: `/js/`,
+			library: "v2gif",
 			libraryExport: "default",
 			libraryTarget: "umd",
-			publicPath: `/resources/${pkg.version}/js/`,
 			//globalObject: "typeof self !== 'undefined' ? self : this",
 		},
 		resolve: {

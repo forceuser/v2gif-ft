@@ -1,7 +1,7 @@
-const browserslist = require("browserslist");
-const process = require("process");
+import browserslist from "browserslist";
+import process from "process";
 
-module.exports = function (api) {
+export default function (api) {
 	const env = api.env();
 	let envObject;
 	if (typeof env === "string" && env.startsWith("{")) {
@@ -42,4 +42,4 @@ module.exports = function (api) {
 		}]);
 	}
 	return config;
-};
+}

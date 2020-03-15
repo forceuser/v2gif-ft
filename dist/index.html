@@ -92,11 +92,20 @@
 	<script src="/js/index.js"></script>
 	<script>
 		if ("serviceWorker" in navigator) {
-			navigator.serviceWorker.register("./sw.js", {scope: "/"}).then(function (registration) {
-				const sw = registration.active;
+			window.addEventListener("load", function() {
+				navigator.serviceWorker.register("/sw.js")
+				.then(
+					function (registration) {
+						console.log("ServiceWorker registration successful with scope: ", registration.scope);
+						registration.update && registration.update();
+					},
+					function (error) {
+						console.log("ServiceWorker registration failed: ", error);
+					}
+				);
 			});
 		}
-		index();
+		v2gif();
 	</script>
 </body>
 
