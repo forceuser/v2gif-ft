@@ -16,10 +16,7 @@ function updateDeviceType () {
 
 updateDeviceType();
 
-
-
 function main () {
-	// a0608b80-6650-11ea-a800-c953f9a48260
 	const url = new URL(window.location.href);
 
 
@@ -115,7 +112,7 @@ function main () {
 						</div>
 					</div>
 					<div class="result-item">
-						<video style="max-width: 90%; width: 230px;" autoplay playsinline muted disableremoteplayback src="/file/${i.id}.mp4">
+						<video style="max-width: 90%; width: 230px;" playsinline loop autoplay muted disableremoteplayback src="/file/${i.id}.mp4">
 						</video>
 						<div style="margin-top: 20px;">
 							<a href="/file/${i.id}.mp4" target="_blank" download="${i.original}.mp4">скачать mp4 (${filesize(i.size.mp4, {locale: "ru"})})</a>
