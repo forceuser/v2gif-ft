@@ -92,7 +92,7 @@ export default async function main () {
 	await cleanup();
 
 	const expressApp = express();
-	expressApp.set("trust proxy", app.settings.get("trust-proxy"));
+	expressApp.set("trust proxy", true); // app.settings.get("trust-proxy")
 
 	const router = express.Router();
 
