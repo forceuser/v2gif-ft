@@ -3,3 +3,4 @@ node_modules
 ./test/build
 uploads
 coverage
+./build-utils/sources/
