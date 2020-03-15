@@ -146,7 +146,9 @@ let gifsicle;
 let ffmpeg;
 async function init () {
 	gifsicle = (await tryA(() => commandExists("gifsicle"), []))[0] || (path.resolve(__dirname, "../../build-utils/bin/gifsicle"));
-	ffmpeg = ((await tryA(() => commandExists("ffmpeg"), []))[0] || (await import("ffmpeg-static").default));
+	ffmpeg = (
+		(await tryA(() => commandExists("ffmpeg"), []))[0] ||
+		(await import("ffmpeg-static")).default);
 	console.log("gifsicle bin".green, gifsicle);
 	console.log("ffmpeg bin:".green, ffmpeg);
 }
