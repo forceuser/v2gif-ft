@@ -2,6 +2,7 @@ import {exec} from "./common.js";
 import fetch from "node-fetch";
 import fs from "fs-extra";
 import path from "path";
+import globby from "globby";
 import unzipper from "unzipper";
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
@@ -21,6 +22,8 @@ async function main () {
 				});
 			});
 	}
+	const paths = (await globby(["./**/*"], {cwd: path.resolve(__dirname, "./sources/gifsicle-1.92")}));
+	console.log("paths", paths);
 	await exec(`cd ${path.resolve(__dirname, "./sources/gifsicle-1.92")} && autoreconf -ivf && ./configure --disable-gifview --disable-gifdiff --prefix="${path.resolve(__dirname, "./bin/")}"  --bindir="${path.resolve(__dirname, "./bin/")}" && make install`);
 
 
