@@ -146,7 +146,7 @@ let gifsicle;
 let ffmpeg;
 async function init () {
 	gifsicle = (await tryA(() => commandExists("gifsicle"), []))[0] || (path.resolve(__dirname, "../../build-utils/bin/gifsicle"));
-	ffmpeg = (await tryA(() => commandExists("ffmpeg"), []))[0] || (await import("ffmpeg-static"));
+	ffmpeg = ((await tryA(() => commandExists("ffmpeg"), []))[0] || (await import("ffmpeg-static").default));
 	console.log("gifsicle bin".green, gifsicle);
 	console.log("ffmpeg bin:".green, ffmpeg);
 }
@@ -158,7 +158,9 @@ export async function videoToGif (srcPath, {scaleWidth = 230, fps = 7, compressi
 	console.log("starting compression", srcPath);
 	console.log("options", {scaleWidth, fps, compression, dither});
 	const ext = path.extname(srcPath);
+	console.log("srcPath", srcPath, "ext", ext);
 	const destPath = path.join(path.dirname(srcPath), path.basename(srcPath, ext));
+	console.log("srcPadestPathth", destPath);
 	await exec(`${ffmpeg} -i ${srcPath} -vf select="eq(pict_type\\,I)" -vsync vfr -vframes 1 -q:v 2 -y ${destPath}-frame.png`, {silent: true});
 	console.log("Frame taken");
 	const image = await loadImage(path.resolve(__dirname, `${destPath}-frame.png`));
