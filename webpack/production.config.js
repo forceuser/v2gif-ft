@@ -1,11 +1,10 @@
-/* global __dirname */
-import path from "path";
-import merge from "webpack-merge";
-import baseConfig from "./base.config.js";
-import webpack from "webpack";
-import TerserPlugin from "terser-webpack-plugin";
+const path = require("path");
+const merge = require("webpack-merge");
+const baseConfig = require("./base.config.js");
+const webpack = require("webpack");
+const TerserPlugin = require("terser-webpack-plugin");
 
-export default (env = {}) => {
+module.exports = (env = {}) => {
 	const result = merge(baseConfig(env), {
 		mode: "production",
 		optimization: {

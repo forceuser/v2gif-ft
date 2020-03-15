@@ -1,6 +1,6 @@
 {
 	"name": "video2gif-ftband",
-	"version": "1.0.21",
+	"version": "1.0.39",
 	"main": "index.js",
 	"type": "module",
 	"engines": {
@@ -20,6 +20,7 @@
 		"library": "v2gif"
 	},
 	"scripts": {
+		"webpackH": "webpack migrate",
 		"postinstall": "node ./build-utils/build-binaries.js",
 		"fix": "eslint --fix ./src/app/",
 		"start": "node ./index.js",
@@ -88,6 +89,7 @@
 		"yargs": "^12.0.5"
 	},
 	"devDependencies": {
+		"@webpack-cli/migrate": "^0.1.9",
 		"autoprefixer": "^9.7.4",
 		"babel-eslint": "^10.1.0",
 		"babel-loader": "^8.0.6",
@@ -98,6 +100,7 @@
 		"copyfiles": "^2.2.0",
 		"documentation": "^9.3.1",
 		"eslint": "^6.8.0",
+		"esm": "^3.2.25",
 		"expose-loader": "^0.7.5",
 		"find-free-port": "^2.0.0",
 		"foreach-cli": "^1.8.0",
@@ -120,7 +123,7 @@
 		"uglifycss": "0.0.29",
 		"webpack": "^4.42.0",
 		"webpack-bundle-analyzer": "^3.6.1",
-		"webpack-cli": "3.1.1",
+		"webpack-cli": "^3.3.11",
 		"webpack-dev-middleware": "3.4.0",
 		"webpack-dev-server": "^3.10.3",
 		"webpack-hot-middleware": "2.24.2",

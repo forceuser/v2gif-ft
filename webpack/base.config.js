@@ -1,17 +1,8 @@
-/* global __dirname */
-import webpack from "webpack";
-import path from "path";
-import process from "process";
-import {getJSON} from "../build-utils/common.js";
+const webpack = require("webpack");
+const path = require("path");
+const process = require("process");
 
-const pkg = getJSON("package.json");
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
-
-const ma = pkg._moduleAliases || {};
-const alias = Object.keys(ma).reduce((acc, key) => (acc[key] = ma[key].includes("/") ? path.resolve(__dirname, "../", ma[key]) : ma[key], acc), {});
-const vasettings = pkg["va-release"] || {};
-
-export default (env = {}) => {
+module.exports = (env = {}) => {
 	const copyEnv = JSON.parse(JSON.stringify(env))
 	env = Object.assign(env, process.env, copyEnv);
 	const config = {
@@ -28,13 +19,12 @@ export default (env = {}) => {
 			//globalObject: "typeof self !== 'undefined' ? self : this",
 		},
 		resolve: {
-			alias,
 		},
 		devtool: "source-map",
 		module: {
 			rules: [
 				{
-					test: /\.(js|mjs)$/,
+					test: /\.(js|mjs|cjs)$/,
 					exclude: /(node_modules)/,
 					use: [{
 						loader: "babel-loader",
