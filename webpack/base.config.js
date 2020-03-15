@@ -33,26 +33,24 @@ export default (env = {}) => {
 		devtool: "source-map",
 		module: {
 			rules: [
-				...(vasettings.babel
-					? [{
-						test: /\.(js|mjs)$/,
-						exclude: /(node_modules)/,
-						use: [{
-							loader: "babel-loader",
-							options: {
-								babelrc: true,
-								envName: JSON.stringify(env),
-							},
-						}],
-					}]
-					: []),
+				{
+					test: /\.(js|mjs)$/,
+					exclude: /(node_modules)/,
+					use: [{
+						loader: "babel-loader",
+						options: {
+							babelrc: true,
+							// envName: "browser",
+						},
+					}],
+				},
 				{
 					test: /(\.html|\.txt)$/,
 					use: [
 						{
-							loader: "raw-loader",
-						},
-					],
+							loader: "raw-loader"
+						}
+					]
 				},
 			],
 		},

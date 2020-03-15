@@ -1,5 +1,5 @@
 import isMobile from "ismobilejs";
-import $ from "jquery";
+import $ from "cash-dom";
 import filesize from "filesize";
 
 function updateDeviceType () {
@@ -64,7 +64,7 @@ function main () {
 			updateState();
 			form.remove();
 		});
-		input.click();
+		input[0]?.click();
 	});
 
 	$(".page-result").on("submit", async event => {
