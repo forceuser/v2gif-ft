@@ -1,6 +1,5 @@
 node_modules
 ./uploads
 ./test/build
-./build-utils/sources/
 uploads
 coverage
