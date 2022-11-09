@@ -122,7 +122,7 @@
 		"uglifycss": "0.0.29",
 		"webpack": "^4.42.0",
 		"webpack-bundle-analyzer": "^3.6.1",
-		"webpack-cli": "^3.3.11",
+		"webpack-cli": "^3.3.12",
 		"webpack-dev-middleware": "3.4.0",
 		"webpack-dev-server": "^3.10.3",
 		"webpack-hot-middleware": "2.24.2",
