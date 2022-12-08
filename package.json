@@ -64,7 +64,7 @@
 		"core-js": "^3.6.4",
 		"cross-env": "^4.0.0",
 		"deepmerge": "^2.2.1",
-		"express": "^4.17.1",
+		"express": "^4.17.3",
 		"express-http-proxy": "^1.6.0",
 		"ffmpeg-static": "^4.0.1",
 		"filesize": "^4.2.1",
